@@ -30,6 +30,7 @@
 my $feature_compress = 1;
 
 use LWP::UserAgent;
+use URI;
 eval { "load Compress::Zlib;" } or $feature_compress=0;
 use POSIX qw(strftime);
 use File::Spec;
@@ -287,35 +288,37 @@ sub HandleSite() {
     $ua->timeout($timeout);
     $ua->env_proxy;
     if ( $proxy ne "" ) { $ua->proxy( http => $proxy ); }
-    $req = new HTTP::Request( 'GET', $url );
-    if ( $auth ne "none" ) {
-        $req->authorization_basic( split ( /:/, $auth, 2 ) );
-    }
-
-    if ( $proxyAuth ne "none" ) {
-        $req->proxy_authorization_basic( split ( /:/, $proxyAuth, 2 ) );
-    }
-    #$req->push_header("Accept" => "text/html, text/plain, text/*, */*");
-    my $compress_options = "identity";
-    if ($feature_compress) {
-        $compress_options = "gzip, $compress_options";
-    }
-    $req->push_header("Accept-Encoding" => $compress_options);
+    $req = PrepareRequest($url);
 
     # Try up to '$retry' times to download URL
     $counter = 0;
     srand;
     while ( $counter < $retry ) {
         $resp = $ua->request($req);
-        if ( $resp->is_success ) { last; }
-        else {
+
+        if ( ! $resp->is_success ) {
             $counter++;
             if ( $randomwait > 0 ) {
                 $random = int( rand $randomwait ) + 1;
                 sleep $random;
             }
             else { sleep $retrywait; }
+            next;
         }
+
+        # Leave if there is no refresh header
+        if (!$resp->header("Refresh")) { last; }
+
+        # Handle it if the refresh is for zero seconds
+        ( $time, $refresh_url ) = split(/;/, $resp->header("Refresh"), 2);
+        if ($time > 0) { last; }
+        
+        # Convert to absolute URL and refetch the page
+        ( undef, $refresh_to ) = split(/=/, $refresh_url, 2);
+        $newurl = URI->new_abs($refresh_to, $url)->as_string();
+
+        $req = PrepareRequest($newurl);
+        # Don't reset the counter, we still want to protect from endless loops
     }
 
     # If URL is successfully downloaded
@@ -474,6 +477,26 @@ sub HandleSite() {
     }
 
     return 0;
+}
+
+sub PrepareRequest() {
+    my $url = shift (@_);
+
+    $req = new HTTP::Request( 'GET', $url );
+
+    my $auth = $siteinfo{Auth};
+    if ( $auth ne "none" ) { $req->authorization_basic( split ( /:/, $auth, 2 ) ); }
+
+    my $proxyAuth = $siteinfo{$proxyAuth};
+    if ( $proxyAuth ne "none" ) { $req->proxy_authorization_basic( split ( /:/, $proxyAuth, 2 ) ); }
+    
+    #$req->push_header("Accept" => "text/html, text/plain, text/*, */*");
+    
+    my $compress_options = "identity";
+    if ($feature_compress) { $compress_options = "gzip, $compress_options"; }
+    $req->push_header("Accept-Encoding" => $compress_options);
+
+    return $req;
 }
 
 # Mail message

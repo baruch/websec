@@ -11,6 +11,9 @@
     * Use sendmail from /usr/sbin/ if it's no available in /usr/lib/, this
       fixes a problem with RedHat 9. (Thanks to Michael Wittman)
 
+    * Follow refresh links, this is useful to pass automatic forwarding pages.
+      (Thanks to Adam Stanley)
+
 1.7.0 - Released on 31-May-2003
 
     * Add MailFrom, to set the address from which the mail will appear to come.
