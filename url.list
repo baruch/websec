@@ -19,7 +19,7 @@
 Auth      = none
 Diff      = webdiff
 Hicolor   = blue
-Ignore    = General.Date_Time
+Ignore    = General,Date_Time
 IgnoreURL = Adverts
 Tmin      = 0
 Tmax      = 99999
