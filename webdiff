@@ -2,7 +2,7 @@
 
 #################################################################################
 #
-# Webdiff Ver 1.3.4
+# Webdiff Ver 1.4.0
 #
 # Compares two HTML pages (current and archive) and outputs a new page based
 # on the current page but with the differences between the two pages highlighted.
@@ -28,7 +28,7 @@
 # Print help if no arguments passed
 if ($#ARGV <= 0)
 {
-    print "Webdiff Ver 1.3.4\n";
+    print "Webdiff Ver 1.4.0\n";
     print "By Chew Wei Yih Copyleft (c) 1998\n\n";
     print "Options:\n";
     print "  -archive   <pathname>  Archive HTML file\n";
@@ -53,7 +53,7 @@ if ($#ARGV <= 0)
     -tmax       => 99999,
     -debug      => "false",
 );
-ParseArguments(@ARGV);
+&ParseArguments(@ARGV);
 
 # Store option values in easy-to-access variables
 $oldpage    = $optionList{-archive};
@@ -68,7 +68,7 @@ $debug      = $optionList{-debug};
 $ignoreFile = "ignore.list";
 
 # Get base directory
-($basedir = $0) =~ s:[^/]+$::;
+$basedir = $ENV{HOME} . "/.websec/";
 
 # Choose highlighting color
 %colorList = ( yellow => "#ffff99", blue => "#66ccff", pink => "#ffcccc", grey => "#4c4c4c" );
@@ -153,12 +153,12 @@ foreach (@tags)
 }
 
 # Parse old and new page
-TokenizePage($oldpage); @oldtokens = @tokens; $#tokens = -1;
+&TokenizePage($oldpage); @oldtokens = @tokens; $#tokens = -1;
 if ($debug eq "true") { foreach (@oldtokens) { print ">>>> $_\n"; } }
-TokenizePage($newpage); @newtokens = @tokens; $#tokens = -1;
+&TokenizePage($newpage); @newtokens = @tokens; $#tokens = -1;
 
 # Parse new page
-PerformDiff();
+&PerformDiff();
 
 # Restore tags which we have previously mangled
 foreach $token (@newtokens)

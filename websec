@@ -2,7 +2,7 @@
 
 #################################################################################
 # 
-# Web Secretary Ver 1.3.4
+# Web Secretary Ver 1.4.0
 #
 # Retrieves a list of web pages and send the pages via email to
 # a designated recipient. It can optionally compare the page with a
@@ -31,15 +31,17 @@ use LWP::UserAgent;
 use POSIX qw(strftime);
 
 # Print introduction
-print "Web Secretary Ver 1.3.4\n";
+print "Web Secretary Ver 1.4.0\n";
 print "By Chew Wei Yih Copyleft (c) 1998\n\n";
 
 # Get today's date in the format we want.
 $today = strftime "%d %B %Y (%a)", localtime;
 
 # Prepare pathnames.
-($base = $0) =~ s:[^/]+$::;
+$base= $ENV{HOME} . "/.websec/";
 $archive = "archive/";
+mkdir $base,0750 if !-d $base;
+mkdir $base . $archive,0750 if !-d $base . $archive;
 $outgoing = $base . "index.html";
 $page_current = $base . "retrieve.html";
 
@@ -61,14 +63,21 @@ $page_current = $base . "retrieve.html";
     EmailLink => "",
     Proxy     => "",
     ProxyAuth => "none",
+    Randomwait=> 0,
+    Retry     => 3,
+    Retrywait => 0,
+    Timeout   => 20,
     Tmin      => 0,
     Tmax      => 99999,
+    AddSubject=> "",
     Digest    => "false",
 );
 %siteinfo = %defaults;
 
 # Default return code
 $rc = 0;
+
+open ARGV, "$base/url.list" unless exists $ARGV[0];
 
 # Loop through input file and process all sites listed
 while(<>)
@@ -82,19 +91,19 @@ while(<>)
     # Handle non-empty lines
     if (length != 0)
     {
-        $rc = HandleInput();
+        $rc = &HandleInput();
         if ($rc != 0) { last; }
         next;
     }
 
     # Handle line separators
-    $rc = HandleSite();
+    $rc = &HandleSite();
     if ($rc != 0) { last; }
     %siteinfo = %defaults;
 }
 
 # Process last site if available
-    if ($rc == 0 && $siteinfo{URL} ne "") { $rc = HandleSite(); }
+    if ($rc == 0 && $siteinfo{URL} ne "") { $rc = &HandleSite(); }
 
 # Delete temp files
 unlink($outgoing);
@@ -104,7 +113,7 @@ if (@digest)
 {
     $linkmsg = "The contents of the following URLs have changed:\n\n" . join("\n",@digest) . "\n";
     $subj = "[websec] - $today";
-    MailMessage($linkmsg, $subj, $digestEmail);
+    &MailMessage($linkmsg, $subj, $digestEmail);
 }
 
 # End of main program
@@ -121,12 +130,14 @@ sub HandleInput()
 
     # Check if valid keyword
     if ($keyword ne "URL" && $keyword ne "Auth" && $keyword ne "Name"
-	&& $keyword ne "Prefix"
+	&& $keyword ne "Prefix" && $keyword ne "Timeout"
+	&& $keyword ne "Retry" && $keyword ne "Retrywait"
+	&& $keyword ne "Randomwait"
 	&& $keyword ne "Diff" && $keyword ne "Hicolor" && $keyword ne "Ignore"
 	&& $keyword ne "Email" && $keyword ne "EmailLink"
 	&& $keyword ne "Tmin" && $keyword ne "Tmax" && $keyword ne "Proxy"
 	&& $keyword ne "IgnoreURL" && $keyword ne "ProxyAuth"
-	&& $keyword ne "Digest")
+	&& $keyword ne "Digest" && $keyword ne "AddSubject")
     {
         print qq(Unrecognized keyword in line $.: "$_".\n);
         return -1;
@@ -154,8 +165,13 @@ sub HandleSite()
     $emailLink = $siteinfo{EmailLink};
     $proxy     = $siteinfo{Proxy};
     $proxyAuth = $siteinfo{ProxyAuth};
+    $randomwait= $siteinfo{Randomwait};
+    $retry     = $siteinfo{Retry};
+    $retrywait = $siteinfo{Retrywait};
+    $timeout   = $siteinfo{Timeout};
     $tmin      = $siteinfo{Tmin};
     $tmax      = $siteinfo{Tmax};
+    $addsubject= $siteinfo{AddSubject};
     $digest    = $siteinfo{Digest};
 
     # If block without URL, assume parameter setting block and update default values
@@ -179,15 +195,15 @@ sub HandleSite()
     $page_previousExists = 1;
     open(FILE, $page_previous) or $page_previousExists = 0;
     close(FILE);
-    $subj = "[websec] $name - $today";
+    $subj = "$addsubject $name - $today";
     $webdiff =
-        $base .
         "webdiff -archive $page_previous -current $page_current -out $outgoing " .
         "-hicolor $hicolor -ignore $ignore -ignoreurl $ignoreurl -tmin $tmin -tmax $tmax";
 
     # Download URL using LWP
     $ua = new LWP::UserAgent;
     $ua->agent("websec/1.0");
+    $ua->timeout($timeout);
     $ua->env_proxy;
     if ($proxy ne "") { $ua->proxy(http => $proxy); }
     $req = new HTTP::Request('GET', $url);
@@ -196,11 +212,22 @@ sub HandleSite()
 	$req->proxy_authorization_basic(split(/:/, $proxyAuth, 2));
     }
 
-    # Try up to 3 times to download URL
-    for(1..3)
+    # Try up to '$retry' times to download URL
+    $counter=0;
+    srand;
+    while($counter < $retry)
     {
         $resp = $ua->request($req);
         if ($resp->is_success) { last; }
+        else
+	    {
+	    $counter++;
+	    if ($randomwait > 0) {
+		$random = int(rand $randomwait) + 1;
+		sleep $random;
+	    }
+	    else { sleep $retrywait; }
+	    }
     }
 
     # If URL is successfully downloaded
