@@ -56,11 +56,14 @@ $(PROGMAN) : %.1 : %
 $(CONFMAN) : %.5 : %
 	pod2man --section 5 $< > $@
 
+install_html: html
+	install -m 0644 $(HTMLFILES) $(DEST)
+
 html: $(CONFMANHTML) $(PROGMANHTML)
 
 $(CONFMANHTML) : %(5).html : %
-	pod2html --podroot . --podpath . --infile "$<" --outfile "$@"
+	pod2html --htmlroot . --podroot . --podpath . --infile "$<" --outfile "$@"
 
 $(PROGMANHTML) : %(1).html : %
 	-rm -f pod2htm*
-	pod2html --podroot . --podpath . --infile "$<" --outfile "$@"
+	pod2html --htmlroot . --podroot . --podpath . --infile "$<" --outfile "$@"
