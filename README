@@ -27,7 +27,7 @@ my own leisure.
 
 Web Secretary should be able to run on all Unix systems with a Perl
 interpreter (and LWP module) installed. At present, it has only been tested
-on Linux.
+on Linux. Users report that it works on Windows too.
 
 
 3. INSTALLATION AND CONFIGURATION
@@ -52,7 +52,7 @@ Installing Web Secretary is easy.
 4. USAGE 
 
 You can run Web Secretary whenever you want to monitor the changes in your
-URL list by typing 'websec <URL list>'.
+URL list by typing 'websec'.
 
 Alternatively, you can add Web Secretary to your crontab and run it on a
 regular basis (eg. daily). You can even have different URL list files and
@@ -61,8 +61,7 @@ run them at different intervals (eg. hourly, daily, weekly etc.)
 It goes without saying that you can use Web Secretary to monitor its own
 homepage so that you can be informed of the latest news and updates.
 
-Web Secretary is available at:   http://homemade.hypermart.net/websec/
-                           or:   http://homemade.virtualave.net/websec/
+Web Secretary is available at:   http://www.nongnu.org/websec/
 
 
 5. URL LIST
@@ -125,6 +124,11 @@ The following parameters (case-sensitive) are recognized in each section:
     Digest     - true|false or yes|no. This works only if EmailLink is
                  specified. It consolidates all the changed URLs and sends
                  them in one email.
+
+    UserAgent  - The User-Agent that will be sent by the web client. This can
+	             be used to bypass servers that prevent access based on the user
+				 agent.
+	
 
 Any line which begins with a '#' is treated as comment and ignored.
 
