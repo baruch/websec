@@ -263,6 +263,11 @@ For example,
     Prefix = jdc
 
 
+=head1 SEE ALSO
+
+L<ignore.list(5)>
+
+
 =head1 AUTHOR
 
 Baruch Even <websec@ev-en.org> is maintaining this program.

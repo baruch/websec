@@ -475,6 +475,12 @@ highlighted.
 
 B<webdiff> is internal to B<websec> and isn't well documented.
 
+
+=head1 SEE ALSO
+
+L<websec(1)>
+
+
 =head1 AUTHOR
 
 Victor Chew is the original author of this software and

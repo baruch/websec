@@ -147,6 +147,11 @@ An "Adverts" section is supplied in this distribution. Feel free to add your
 own!
 
 
+=head1 SEE ALSO
+
+L<url.list(5)>
+
+
 =head1 AUTHOR
 
 Baruch Even <websec@ev-en.org> is maintaining this program.

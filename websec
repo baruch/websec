@@ -521,7 +521,8 @@ requests.
 
 =head1 SEE ALSO
 
-/usr/share/doc/websec/README.gz, L<url.list(5)>, L<ignore.list(5)>
+/usr/share/doc/websec/README.gz, L<url.list(5)>, L<ignore.list(5)>, L<webdiff(1)>.
+
 
 =head1 AUTHOR
 
