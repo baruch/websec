@@ -13,8 +13,12 @@ CONFSRC=url.list ignore.list
 PROGMAN=$(PROGSRC:%=%.1)
 CONFMAN=$(CONFSRC:%=%.5)
 
+PROGMANHTML=$(addsuffix (1).html,$(PROGSRC))
+CONFMANHTML=$(addsuffix (5).html,$(CONFSRC))
+
 # Generated files
 GENFILES=$(PROGMAN) $(CONFMAN)
+HTMLFILES=$(addprefix ",$(addsuffix ",$(PROGMANHTML) $(CONFMANHTML)))
 
 all: $(GENFILES)
 
@@ -44,10 +48,19 @@ install: all
 	install -m 0644 websec.vim $(VIMSYNDIR)
 
 clean:
-	rm -f $(GENFILES)
+	rm -f $(GENFILES) pod2htm* $(HTMLFILES)
 
 $(PROGMAN) : %.1 : %
 	pod2man $< > $@
 
 $(CONFMAN) : %.5 : %
 	pod2man --section 5 $< > $@
+
+html: $(CONFMANHTML) $(PROGMANHTML)
+
+$(CONFMANHTML) : %(5).html : %
+	pod2html --podroot . --podpath . --infile "$<" --outfile "$@"
+
+$(PROGMANHTML) : %(1).html : %
+	-rm -f pod2htm*
+	pod2html --podroot . --podpath . --infile "$<" --outfile "$@"
