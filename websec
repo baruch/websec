@@ -42,7 +42,11 @@ print "Web Secretary Ver 1.7.0\n";
 print "By Chew Wei Yih Copyleft (c) 1998\n\n";
 
 # Initialize parameters
-if ( -e "url.list" ) {
+
+$urllist = "url.list";
+GetOptions("urllist=s" => \$urllist);
+
+if ( -e $urllist ) {
     $base = ".";
 }
 else {
@@ -131,7 +135,7 @@ local %defaults = (
 # Default return code
 $rc = 0;
 
-open ARGV, $base . "/url.list" unless exists $ARGV[0];
+open ARGV, $base . "/" . "$urllist" unless exists $ARGV[0];
 
 # Loop through input file and process all sites listed
 while (<>) {
@@ -631,6 +635,10 @@ Prints the manual page and exits.
 =item B<--base>
 
 Base directory for configuration (~/.websec by default)
+
+=item B<--urllist>
+
+Use another file for the url list, by default it is "url.list".
 
 =back
 
