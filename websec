@@ -267,11 +267,11 @@ sub HandleSite() {
         $req->proxy_authorization_basic( split ( /:/, $proxyAuth, 2 ) );
     }
     #$req->push_header("Accept" => "text/html, text/plain, text/*, */*");
-    if (not $feature_compress) {
-        $req->push_header("Accept-Encoding" => "identity");
-    } else {
-        $req->post_header("Accept-Encoding" => "gzip, identity");
+    my $compress_options = "identity";
+    if ($feature_compress) {
+        $compress_options = "gzip, $compress_options";
     }
+    $req->push_header("Accept-Encoding" => $compress_options);
 
     # Try up to '$retry' times to download URL
     $counter = 0;
