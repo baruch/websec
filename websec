@@ -89,6 +89,7 @@ local %defaults = (
     IgnoreURL  => "none",
     Email      => "",
     EmailLink  => "",
+    EmailError => 1,
     Program    => "",
     Proxy      => "",
     ProxyAuth  => "none",
@@ -335,10 +336,11 @@ sub HandleSite() {
           "Unable to retrieve $name ($url).\n\n"
           . "Detailed error as follows:\n"
           . $resp->error_as_HTML;
-        if ( $email ne "" ) {
+
+        if ( $email ne "" && $siteinfo{EmailError} ) {
             MailMessage( $errmsg, $subj, $email, $siteinfo{MailFrom} );
         }
-        if ( $emailLink ne "" ) {
+        if ( $emailLink ne "" && $siteinfo{EmailError} ) {
             if ( ( $digest ne "no" ) && ( $digest ne "false" ) ) {
                 push @digest, "Unable to retrieve: $url";
                 ($digestEmail) or ( $digestEmail = $emailLink );

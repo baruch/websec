@@ -15,6 +15,7 @@
 # MailFrom   = Address from which the mail will appear from.
 # Email      = email address to send page to.
 # EmailLink  = email address to send URL to.
+# EmailError = 0 or 1, zero will disable emailing on errors and 1 will enable (default 1)
 # Program    = application to call with the diff-file.
 #############################################################################################
 
@@ -28,6 +29,7 @@ Tmax      = 99999
 Email     = ${USER}@example.com
 EmailLink = ${USER}@example.com
 #MailFrom = ${USER}@example.com
+EmailError = 1
 
 # enable this to open the webdiff-output in a new Mozilla Tab or specify a 
 # different application to run with the changed page
