@@ -115,12 +115,12 @@ if ( $ignore ne "none" ) {
         ( $section = $_ ) =~ s:\[\s*(.*?)\s*\]:$1:sig;
         if ( $ignore =~ m:,$section,:i ) { $ignoreStartRead = 1; }
     }
+    close( IGNORE );
     @ignore = split /[\r\n]/, $ignorelist;
 }
 if ($debug) {
     foreach (@ignore) { print "Ignore: $_\n"; }
 }
-close(IGNORE);
 
 # Read ignore urls
 if ( $ignoreurl ne "none" ) {
@@ -136,6 +136,7 @@ if ( $ignoreurl ne "none" ) {
         ( $section = $_ ) =~ s:\[\s*(.*?)\s*\]:$1:sig;
         if ( $ignoreurl =~ m:,$section,:i ) { $ignoreStartRead = 1; }
     }
+    close( IGNORE );
     @ignoreurl = split /[\r\n]/, $ignorelist;
 }
 if ($debug) {
@@ -308,7 +309,7 @@ sub TokenContainsIgnoreKeyword() {
     $tokdup = $token;
 
     # If this token contains >= tmax no. of words, do not ignore
-    $tokdup =~ s:\@\@\@\@.&nbsp;~~~~: :sig;
+    $tokdup =~ s:\@\@\@\@&nbsp;~~~~: :sig;
     $tokdup =~ s:~~~~:<:sig;
     $tokdup =~ s:\@\@\@\@:>:sig;
     $tokdup =~ s:<A(\s+[^>]*)<([^>]*)>([^>])*>::sig;
@@ -338,7 +339,7 @@ sub TokenExists() {
     $tokdup = $token;
 
     # If this token contains <= tmin no. of words, don't check
-    $tokdup =~ s:\@\@\@\@.&nbsp;~~~~: :sig;
+    $tokdup =~ s:\@\@\@\@&nbsp;~~~~: :sig;
     $tokdup =~ s:~~~~:<:sig;
     $tokdup =~ s:\@\@\@\@:>:sig;
     $tokdup =~ s:<A(\s+[^>]*)<([^>]*)>([^>])*>::sig;
