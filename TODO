@@ -1,0 +1,48 @@
+Next Release
+------------
+
+http://groups.yahoo.com/group/websec/message/79 has an elisp mode to highlight
+url.list.
+  - need an equivalent from vim.
+  - Find out where to install the emacs mode
+
+
+Short Term
+----------
+
+Enable running multiple websec instances at the same time:
+http://groups.yahoo.com/group/websec/message/70
+  - Implement
+
+Send mail from windows:
+http://groups.yahoo.com/group/websec/message/21
+  - Improve mail sending
+
+Problem with script pages (eg Slashdot):
+http://groups.yahoo.com/group/websec/message/35 
+  - Check if needed
+
+Patch to remove script/noscript:
+http://groups.yahoo.com/group/websec/message/38
+  - Check if needed, related to Slashdot issues.
+
+Multi-User patches and RPM spec:
+http://groups.yahoo.com/group/websec/message/45
+  - Investigate
+
+
+Long Term
+---------
+
+Keep a website as an image to be put in the desktop background.
+http://groups.yahoo.com/group/websec/message/72
+  - Investigate
+
+Create GUI for websec, similar to kwebwatch, but implement the GUI with Perl
+bindings, this will allow wxWindows bindings for windows and gtk/qt bindings for
+Linux.
+  - Implement, need to modulrize websec to work as a library and have differt
+    GUI, where 'text' is one of them and is the same as now, a simple command
+    line.
+
+
