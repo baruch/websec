@@ -15,6 +15,10 @@ Adam Stanley provided patches to add:
 Short Term
 ----------
 
+B3450, Inconsitency with the .websec/url.list location finding and using websec with a file parameter.
+
+B3497, Show also removed content from the html page, possibly use HTML::Diff
+
 Enable running multiple websec instances at the same time:
 http://groups.yahoo.com/group/websec/message/70
   - Implement
@@ -34,6 +38,11 @@ http://groups.yahoo.com/group/websec/message/38
 Multi-User patches and RPM spec:
 http://groups.yahoo.com/group/websec/message/45
   - Investigate
+
+B3449, Notify when pages in url.list haven't been updated for a long time.
+
+B3472, Provide a method to specify how often to check for changes, mostly for dialup users.
+Can also be used for a constantly running program.
 
 
 Long Term
