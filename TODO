@@ -18,6 +18,10 @@ Short Term
 
 B3450, Inconsitency with the .websec/url.list location finding and using websec with a file parameter.
 
+Run the html output of webdiff through a text mode browser for the benefit of
+text MUA users. This, coupled with the DiffOnly patch will provide an
+approximate for the request of Daniel Fraga.
+
 B3497, Show also removed content from the html page, possibly use HTML::Diff
 
 Enable running multiple websec instances at the same time:
