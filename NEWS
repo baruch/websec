@@ -4,6 +4,10 @@
       bandwidth usage by not retrieving the file at all if it hadn't changed.
       (Patch from Patric Mueller)
 
+    * Add meta tag to keep the charset as provided by the HTTP server.
+      This enables the mail reader to later show the file with the correct
+      encoding. Solves bug #10980 in Savannah.
+
 1.8.0 - Released on 02-Jan-2005
 
     * Support for diffing with HTML::Diff from CPAN, this has support to show
