@@ -1,0 +1,406 @@
+#!/usr/bin/perl -w
+
+#################################################################################
+#
+# Webdiff Ver 1.3.4
+#
+# Compares two HTML pages (current and archive) and outputs a new page based
+# on the current page but with the differences between the two pages highlighted.
+#
+# Copyright (C) 1998  Chew Wei Yih
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#################################################################################
+
+# Print help if no arguments passed
+if ($#ARGV <= 0)
+{
+    print "Webdiff Ver 1.3.4\n";
+    print "By Chew Wei Yih Copyleft (c) 1998\n\n";
+    print "Options:\n";
+    print "  -archive   <pathname>  Archive HTML file\n";
+    print "  -current   <pathname>  Current HTML file\n";
+    print "  -out       <pathname>  Output HTML file (with highlighting)\n";
+    print "  -hicolor   <color>     Highlight color (Def: blue, yellow, pink, grey or #rrggbb)\n";
+    print "  -ignore    <filelist>  Comma-delimited list of named sections containing ignore keywords\n";
+    print "  -ignoreurl <filelist>  Comma-delimited list of named sections containing ignore urls\n";
+    print "  -tmin      <number>    Don't check if token contains <= given no. of words\n";
+    print "  -tmax      <number>    Don't ignore if token contains >= given no. of words\n";
+    print "  -debug     <boolean>   Set to 'true' to output debug messages\n\n";
+    exit -1;
+}
+
+# Parse arguments to get option values
+%optionList =
+(
+    -hicolor    => "blue",
+    -ignore     => "none",
+    -ignoreurl  => "none",
+    -tmin       => 0,
+    -tmax       => 99999,
+    -debug      => "false",
+);
+ParseArguments(@ARGV);
+
+# Store option values in easy-to-access variables
+$oldpage    = $optionList{-archive};
+$curpage    = $optionList{-current};
+$outpage    = $optionList{-out};
+$hicolor    = $optionList{-hicolor};
+$ignore     = $optionList{-ignore};
+$ignoreurl  = $optionList{-ignoreurl};
+$tmin       = $optionList{-tmin};
+$tmax       = $optionList{-tmax};
+$debug      = $optionList{-debug};
+$ignoreFile = "ignore.list";
+
+# Get base directory
+($basedir = $0) =~ s:[^/]+$::;
+
+# Choose highlighting color
+%colorList = ( yellow => "#ffff99", blue => "#66ccff", pink => "#ffcccc", grey => "#4c4c4c" );
+if (defined $colorList{$hicolor}) { $hicolor = $colorList{$hicolor}; }
+if ($hicolor eq "") { $hicolor = $colorList{"blue"}; }
+
+# Other global variables
+$changeStatus = 0;
+@tags = ( "CODE", "B", "I", "U", "TT", "EM", "FONT*", "SUP", "SUB", "SMALL", "STRIKE", "STRONG", "CAPTION*", "A*" );
+
+# Read ignore keywords
+if ($ignore ne "none")
+{
+    $ignore = "," . $ignore . ",";
+    $ignorelist = "";
+    $ignoreStartRead = 0;
+    open(IGNORE, "< $basedir$ignoreFile") or die "Cannot open $basedir$ignoreFile: $!\n";
+    while(<IGNORE>)
+    {
+        chomp;
+        if ($ignoreStartRead && $_ eq "") { $ignoreStartRead = 0; next; }
+        if ($ignoreStartRead) { $ignorelist .= $_ . "\r"; next; }
+        ($section = $_) =~ s:\[\s*(.*?)\s*\]:$1:sig;
+        if ($ignore =~ m:,$section,:i) { $ignoreStartRead = 1; }
+    }
+    @ignore = split/[\r\n]/, $ignorelist;
+}
+if ($debug eq "true") { foreach (@ignore) { print "Ignore: $_\n"; } }
+close(IGNORE);
+
+# Read ignore urls
+if ($ignoreurl ne "none")
+{
+    $ignoreurl = "," . $ignoreurl . ",";
+    $ignorelist = "";
+    $ignoreStartRead = 0;
+    open(IGNORE, "< $basedir$ignoreFile") or die "Cannot open $basedir$ignoreFile: $!\n";
+    while(<IGNORE>)
+    {
+        chomp;
+        if ($ignoreStartRead && $_ eq "") { $ignoreStartRead = 0; next; }
+        if ($ignoreStartRead) { $ignorelist .= $_ . "\r"; next; }
+        ($section = $_) =~ s:\[\s*(.*?)\s*\]:$1:sig;
+        if ($ignoreurl =~ m:,$section,:i) { $ignoreStartRead = 1; }
+    }
+    @ignoreurl = split/[\r\n]/, $ignorelist;
+}
+if ($debug eq "true") { foreach (@ignoreurl) { print "IgnoreURL: $_\n"; } }
+
+# Undefine line separator so that we can read entire file at one go from now on
+undef $/;
+
+# Open input pages for comparing
+open(OLDPAGE, "< $oldpage") or die "Cannot open $oldpage: $!\n";
+open(CURPAGE, "< $curpage") or die "Cannot open $curpage: $!\n";
+
+# Read input pages
+$oldpage = <OLDPAGE>;
+$newpage = <CURPAGE>;
+
+# Close input pages
+close(OLDPAGE);
+close(CURPAGE);
+
+# Mangle some HTML tags to a form suitable for analysis
+$oldpage =~ s:[\r\n]|\s\s: :sig;                                                # Handle MSDOS-style line separators
+$newpage =~ s:[\r\n]|\s\s: :sig;
+$oldpage =~ s:&nbsp;:\@\@\@\@&nbsp;~~~~:sig;                                    # Handle non-breaking white space
+$newpage =~ s:&nbsp;:\@\@\@\@&nbsp;~~~~:sig;
+$oldpage =~ s:<A(\s+[^>]*)<([^>]*)>([^>])*>:~~~~A$1~~~~$2\@\@\@\@$3\@\@\@\@:sig;     # Handle nested brackets
+$newpage =~ s:<A(\s+[^>]*)<([^>]*)>([^>])*>:~~~~A$1~~~~$2\@\@\@\@$3\@\@\@\@:sig;
+foreach (@tags)
+{
+    $tag = $_;
+    $oldpage =~ s:<(/*$tag)>:~~~~$1\@\@\@\@:sig;
+    $newpage =~ s:<(/*$tag)>:~~~~$1\@\@\@\@:sig;
+    if ($tag =~ s/\*/ /)
+    {
+        $oldpage =~ s:<(/*$tag.*?)>:~~~~$1\@\@\@\@:sig;
+        $newpage =~ s:<(/*$tag.*?)>:~~~~$1\@\@\@\@:sig;
+    }
+}
+
+# Parse old and new page
+TokenizePage($oldpage); @oldtokens = @tokens; $#tokens = -1;
+if ($debug eq "true") { foreach (@oldtokens) { print ">>>> $_\n"; } }
+TokenizePage($newpage); @newtokens = @tokens; $#tokens = -1;
+
+# Parse new page
+PerformDiff();
+
+# Restore tags which we have previously mangled
+foreach $token (@newtokens)
+{
+    $token =~ s:\@\@\@\@&nbsp;~~~~:&nbsp;:sig;
+    foreach $tag (@tags) { $token =~ s:~~~~(/*.*?)\@\@\@\@:<$1>:sig; }
+}
+
+# Open output file for writing
+open(OUTPAGE, "> $outpage") or die "Cannot open $outpage: $!\n";
+foreach (@newtokens) { print OUTPAGE "$_\n"; }
+close(OUTPAGE);
+
+# End of program
+if (!$changeStatus)
+{
+    if ($debug eq "true") { print "No changes were detected.\n"; }
+}
+exit $changeStatus;
+
+# Parse arguments
+sub ParseArguments()
+{
+    while(1)
+    {
+        if (!defined($option = shift)) { last; }
+        if ($option ne "-archive" && $option ne "-current" && $option ne "-out" &&
+            $option ne "-hicolor" && $option ne "-ignore" && $option ne "-debug" &&
+            $option ne "-tmin" && $option ne "-tmax" && $option ne "-ignoreurl")
+        {
+            print "Unrecognized option: $option.\n";
+            exit -1;
+        }
+
+        if (!defined($value = shift))
+        {
+            print "No value supplied for option: $option.\n";
+            exit -1;
+        }
+        $optionList{$option} = $value;
+    }
+
+    # Make sure some essential option values are supplied
+    if ($optionList{-archive} eq "")
+    {
+        print "You did not supply the archive HTML file via the -archive option.\n";
+        exit -1;
+    }
+    if ($optionList{-current} eq "")
+    {
+        print "You did not supply the current HTML file via the -current option.\n";
+        exit -1;
+    }
+    if ($optionList{-out} eq "")
+    {
+        print "You did not supply the output HTML file via the -out option.\n";
+        exit -1;
+    }
+}
+
+# Convert page to tokens
+sub TokenizePage()
+{
+    my $page = shift(@_);
+    @tokens = split/(<.*?>)/s, $page;
+    foreach (@tokens) { s/^\s+//sig; }
+    foreach (@tokens) { s/\s+$//sig; }
+}
+
+# Perform diff between two pages
+sub PerformDiff()
+{
+    my $commentOn = 0;
+    my $scriptOn = 0;
+    my $styleOn = 0;
+    my $titleOn = 0;
+    my $ignoreUrlOn = 0;
+
+    foreach $token (@newtokens)
+    {
+        if ($token eq "") { next; }
+        if ($debug eq "true") { print "<<<< $token\n"; }
+
+        if ($token =~ m|^.*?<!-.*?$|) { $commentOn = 1; }
+        if ($token =~ m|^.*?->.*?|) { $commentOn = 0; next; }
+
+        if ($token =~ m|^.*?<TITLE.*?>$|i) { $titleOn = 1; }
+        if ($token =~ m|^.*?</TITLE.*?>$|i) { $titleOn = 0; next; }
+
+        if ($token =~ m|^.*?<SCRIPT.*?>$|i) { $scriptOn = 1; }
+        if ($token =~ m|^.*?</SCRIPT.*?>$|i) { $scriptOn = 0; next; }
+
+        if ($token =~ m|^.*?<STYLE.*?>$|i) { $styleOn = 1; }
+        if ($token =~ m|^.*?</STYLE.*?>$|i) { $styleOn = 0; next; }
+
+        if (TokenContainsIgnoreURL($token)) { $ignoreUrlOn = 1; }
+        if ($ignoreUrlOn && TokenContainsHlinkEnd($token)) { $ignoreUrlOn = 0; next; }
+
+        if ($commentOn)
+        {
+            if ($debug eq "true") { print "#### Token is within comment block.\n"; }
+        }
+        elsif ($titleOn)
+        {
+            if ($debug eq "true") { print "#### Token is within title block.\n"; }
+        }
+        elsif ($scriptOn)
+        {
+            if ($debug eq "true") { print "#### Token is within Javascript block.\n"; }
+        }
+        elsif ($styleOn)
+        {
+            if ($debug eq "true") { print "#### Token is within stylesheet block.\n"; }
+        }
+        elsif ($ignoreUrlOn)
+        {
+            if ($debug eq "true") { print "#### Token contains ignore URL - $lastIgnoreURL\n"; }
+        }
+        elsif ($token =~ m/<.*?>/sig)
+        {
+            if ($debug eq "true") { print "#### Token is a HTML tag.\n"; }
+        }
+        elsif (TokenIsMangledHTMLTag($token))
+        {
+            if ($debug eq "true") { print "#### Token is a mangled HTML tag.\n"; }
+        }
+        elsif (TokenContainsIgnoreKeyword($token))
+        {
+            if ($debug eq "true") { print "#### Token contains ignore keyword - $lastIgnoreKeyword\n"; }
+        }
+        elsif (TokenExists($token))
+        {
+            if ($debug eq "true") { print "#### Token exists in old page.\n"; }
+        }
+        else
+        {
+            if ($debug eq "true" ) { print "#### Token has been highlighted!\n"; }
+            $token = "<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=0><TR><TD BGCOLOR=$hicolor>" .
+                $token . "</TD></TR></TABLE>";
+            $changeStatus = 1;
+        }
+    }
+}
+
+# Check if token is a mangled HTML tag
+sub TokenIsMangledHTMLTag()
+{
+    my $token = shift(@_);
+
+    while($token ne "")
+    {
+        if ($token =~ m|^\s*(.*?)\s*~~~~.*?\@\@\@\@\s*(.*?)\s*$|i)
+        {
+            $token = $2;
+            if (!$1 =~ m|^\s*$|) { return 0; }
+        }
+        else { return 0; }
+    }
+    return 1;
+}
+
+# Check if token contains any keyword in ignore list
+sub TokenContainsIgnoreKeyword()
+{
+    my $token = shift(@_);
+    $token  =~ s/\s{2,}/ /sig;
+    $tokdup = $token;
+
+    # If this token contains >= tmax no. of words, do not ignore
+    $tokdup =~ s:\@\@\@\@.&nbsp;~~~~: :sig;
+    $tokdup =~ s:~~~~:<:sig;
+    $tokdup =~ s:\@\@\@\@:>:sig;
+    $tokdup =~ s:<A(\s+[^>]*)<([^>]*)>([^>])*>::sig;
+    $tokdup =~ s:<[^>]*>::sig;
+    $tokdup =~ s:^\s*::sig;
+    $tokdup =~ s:\s*$::sig;
+    $tokdup =~ s:\s+: :sig;
+    @words = split/\s/, $tokdup;
+    if ($debug eq "true") { print "#### C".($#words+1).": $tokdup\n"; }
+    if ($#words+1 > $tmax) { return 0; }
+
+    foreach $keyword (@ignore)
+    {
+        if ($token  =~ m:^.*?(\b$keyword\b).*?$:i ||
+            $tokdup =~ m:^.*?(\b$keyword\b).*?$:i)
+        {
+            $lastIgnoreKeyword = $keyword;
+            return 1;
+        }
+    }
+    return 0;
+}
+
+# Check if token already exists
+sub TokenExists()
+{
+    my $token = shift(@_);
+    $token  =~ s/\s{2,}/ /sig;
+    $tokdup = $token;
+
+    # If this token contains <= tmin no. of words, don't check
+    $tokdup =~ s:\@\@\@\@.&nbsp;~~~~: :sig;
+    $tokdup =~ s:~~~~:<:sig;
+    $tokdup =~ s:\@\@\@\@:>:sig;
+    $tokdup =~ s:<A(\s+[^>]*)<([^>]*)>([^>])*>::sig;
+    $tokdup =~ s:<[^>]*>::sig;
+    $tokdup =~ s:^\s*::sig;
+    $tokdup =~ s:\s*$::sig;
+    $tokdup =~ s:\s+: :sig;
+    @words = split/\s/, $tokdup;
+    if ($#words+1 <= $tmin) { return 1; }
+
+    foreach $oldtok (@oldtokens)
+    {
+        $oldtok =~ s/\s{2,}/ /sig;
+        if ($token eq $oldtok) { return 1; }
+    }
+    return 0;
+}
+
+# Check if token contains ignore URL
+sub TokenContainsIgnoreURL()
+{
+    my $token = shift(@_);
+    $token  =~ s/\s{2,}/ /sig;
+
+    foreach $url (@ignoreurl)
+    {
+        if ($token =~ m:~~~~A.*?HREF=.*?$url.*?\@\@\@\@:i)
+        {
+            $lastIgnoreURL = $url;
+            return 1;
+        }
+    }
+    return 0;
+}
+
+# Check if token contains end of hyperlink
+sub TokenContainsHlinkEnd()
+{
+    my $token = shift(@_);
+    $token  =~ s/\s{2,}/ /sig;
+    return 1 if $token =~ m:~~~~/A\@\@\@\@:i;
+    return 0;
+}

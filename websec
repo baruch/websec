@@ -1,0 +1,335 @@
+#!/usr/bin/perl -w
+
+#################################################################################
+# 
+# Web Secretary Ver 1.3.4
+#
+# Retrieves a list of web pages and send the pages via email to
+# a designated recipient. It can optionally compare the page with a
+# previously retrieved page, highlight the differences and send the
+# modified page to the recipient instead.
+#
+# Copyright (C) 1998  Chew Wei Yih
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#################################################################################
+
+use LWP::UserAgent;
+use POSIX qw(strftime);
+
+# Print introduction
+print "Web Secretary Ver 1.3.4\n";
+print "By Chew Wei Yih Copyleft (c) 1998\n\n";
+
+# Get today's date in the format we want.
+$today = strftime "%d %B %Y (%a)", localtime;
+
+# Prepare pathnames.
+($base = $0) =~ s:[^/]+$::;
+$archive = "archive/";
+$outgoing = $base . "index.html";
+$page_current = $base . "retrieve.html";
+
+# prepare digest
+@digest = ();
+
+# Set default values
+%defaults =
+(
+    URL       => "",
+    Auth      => "none",
+    Name      => "",
+    Prefix    => "",
+    Diff      => "webdiff",
+    Hicolor   => "blue",
+    Ignore    => "none",
+    IgnoreURL => "none",
+    Email     => "",
+    EmailLink => "",
+    Proxy     => "",
+    ProxyAuth => "none",
+    Tmin      => 0,
+    Tmax      => 99999,
+    Digest    => "false",
+);
+%siteinfo = %defaults;
+
+# Default return code
+$rc = 0;
+
+# Loop through input file and process all sites listed
+while(<>)
+{
+    chop $_;
+    s/^\s*//;
+
+    # Ignore comments
+    if (m/^#.*?$/) { next; }
+    
+    # Handle non-empty lines
+    if (length != 0)
+    {
+        $rc = HandleInput();
+        if ($rc != 0) { last; }
+        next;
+    }
+
+    # Handle line separators
+    $rc = HandleSite();
+    if ($rc != 0) { last; }
+    %siteinfo = %defaults;
+}
+
+# Process last site if available
+    if ($rc == 0 && $siteinfo{URL} ne "") { $rc = HandleSite(); }
+
+# Delete temp files
+unlink($outgoing);
+unlink($page_current);
+
+if (@digest)
+{
+    $linkmsg = "The contents of the following URLs have changed:\n\n" . join("\n",@digest) . "\n";
+    $subj = "[websec] - $today";
+    MailMessage($linkmsg, $subj, $digestEmail);
+}
+
+# End of main program
+exit $rc;
+
+# Handle setting of parameters
+# Params: none
+sub HandleInput()
+{
+    # Get keyword, value pair
+    ($keyword, $value) = split(/=/, $_, 2);
+    $keyword   =~ s/^\s*(.*?)\s*$/$1/;
+    $value     =~ s/^\s*\"*(.*?)\"*\s*$/$1/;
+
+    # Check if valid keyword
+    if ($keyword ne "URL" && $keyword ne "Auth" && $keyword ne "Name"
+	&& $keyword ne "Prefix"
+	&& $keyword ne "Diff" && $keyword ne "Hicolor" && $keyword ne "Ignore"
+	&& $keyword ne "Email" && $keyword ne "EmailLink"
+	&& $keyword ne "Tmin" && $keyword ne "Tmax" && $keyword ne "Proxy"
+	&& $keyword ne "IgnoreURL" && $keyword ne "ProxyAuth"
+	&& $keyword ne "Digest")
+    {
+        print qq(Unrecognized keyword in line $.: "$_".\n);
+        return -1;
+    }
+
+    $siteinfo{$keyword} = $value;
+    return 0;
+}
+
+# Handle downloading, highlighting and mailing of each site.
+# Params: none
+# Returns: 0 => OK, -1 => Error
+sub HandleSite()
+{
+    # Get parameter values for this page
+    $url       = $siteinfo{URL};
+    $auth      = $siteinfo{Auth};
+    $name      = $siteinfo{Name};
+    $prefix    = $siteinfo{Prefix};
+    $diff      = $siteinfo{Diff};
+    $hicolor   = $siteinfo{Hicolor};
+    $ignore    = $siteinfo{Ignore};
+    $ignoreurl = $siteinfo{IgnoreURL};
+    $email     = $siteinfo{Email};
+    $emailLink = $siteinfo{EmailLink};
+    $proxy     = $siteinfo{Proxy};
+    $proxyAuth = $siteinfo{ProxyAuth};
+    $tmin      = $siteinfo{Tmin};
+    $tmax      = $siteinfo{Tmax};
+    $digest    = $siteinfo{Digest};
+
+    # If block without URL, assume parameter setting block and update default values
+    if ($url eq "")
+    {
+        %defaults = %siteinfo;
+        return 0;
+    }
+
+    # If essential parameters are not present, abort with error
+    if ($name eq "" || $prefix eq "" || ($email eq "" && $emailLink eq ""))
+    {
+        print "Name, prefix or email info missing from URL: $url.\n";
+        return -1;
+    }
+
+    # Prepare for downloading this page
+    print "Processing => $url ($name) ...\n";
+    $page_previous = $base . $archive . $prefix . ".html";
+    $page_archive = $base . $archive . $prefix . ".old.html";
+    $page_previousExists = 1;
+    open(FILE, $page_previous) or $page_previousExists = 0;
+    close(FILE);
+    $subj = "[websec] $name - $today";
+    $webdiff =
+        $base .
+        "webdiff -archive $page_previous -current $page_current -out $outgoing " .
+        "-hicolor $hicolor -ignore $ignore -ignoreurl $ignoreurl -tmin $tmin -tmax $tmax";
+
+    # Download URL using LWP
+    $ua = new LWP::UserAgent;
+    $ua->agent("websec/1.0");
+    $ua->env_proxy;
+    if ($proxy ne "") { $ua->proxy(http => $proxy); }
+    $req = new HTTP::Request('GET', $url);
+    if ($auth ne "none") { $req->authorization_basic(split(/:/, $auth, 2)); }
+    if ($proxyAuth ne "none") {
+	$req->proxy_authorization_basic(split(/:/, $proxyAuth, 2));
+    }
+
+    # Try up to 3 times to download URL
+    for(1..3)
+    {
+        $resp = $ua->request($req);
+        if ($resp->is_success) { last; }
+    }
+
+    # If URL is successfully downloaded
+    if ($resp->is_success)
+    {
+        open (HTML_FILE, ">$page_current");
+        print HTML_FILE "<!-- X-URL: ", $resp->base, " -->\n";
+        print HTML_FILE "<BASE HREF= \"", $resp->base. "\">\n";
+        print HTML_FILE $resp->content;
+        close HTML_FILE;
+
+        if ($diff eq "webdiff")
+        {
+            if ($page_previousExists == 1)
+            {
+                print "Highlighting differences from previous version of webpage ...\n";
+                $rc = system($webdiff);
+                if ($rc != 0)
+                {
+                    print "Sending highlighted page to $email ...\n";
+                    if ($email ne "")
+                    {
+                        MailDocument($outgoing, $subj, $email);
+                    }
+                    if ($emailLink ne "")
+                    {
+            			if (($digest ne "no") && ($digest ne "false"))
+                        {
+            			    push @digest,$url;
+			                ($digestEmail) or ($digestEmail=$emailLink);
+            			}
+                        else
+                        {
+            			    $linkmsg = "The contents of the following URL has changed:\n\n$url\n";
+            			    MailMessage($linkmsg, $subj, $emailLink);
+			            }
+                    }
+                }
+                else
+                {
+                    print "No changes were detected.\n";
+                }
+                rename $page_previous, $page_archive;
+                rename $page_current, $page_previous;
+            }
+            else
+            {
+                print "No previous version for this page. Storing in archive ...\n";
+                rename $page_current, $page_previous;
+            }
+        }
+        else
+        {
+            if ($email ne "") { MailDocument($page_current, $subj, $email); }
+            if ($page_previousExists) { rename $page_previous, $page_archive; }
+            rename $page_current, $page_previous;
+        }
+    }
+    # If unable to download URL
+    else
+    {
+        print "Unable to retrieve page.\n";
+        $errmsg = 
+            "Unable to retrieve $name ($url).\n\n" .
+            "Detailed error as follows:\n" . $resp->error_as_HTML;
+        if ($email ne "") { MailMessage($errmsg, $subj, $email); }
+        if ($emailLink ne "") {
+	    if (($digest ne "no") && ($digest ne "false")) {
+		push @digest,"Unable to retrieve: $url";
+		($digestEmail) or ($digestEmail=$emailLink);
+	    } else {
+		MailMessage($errmsg, $subj, $emailLink);
+	    }
+	}
+    }
+
+    return 0;
+}
+
+# Mail message
+# Params: message, subject, recipient
+# Returns: none
+sub MailMessage()
+{
+    my $message = shift(@_);
+    my $subject = shift(@_);
+    my @recipients = split/,/, shift(@_);
+
+    foreach $email (@recipients)
+    {
+        $req = HTTP::Request->new(POST => "mailto:" . $email);
+        $req->header("Subject", $subject);
+        $req->header("Content-type", "text/plain; charset=us-ascii");
+        $req->header("Content-Transfer-Encoding", "7bit");
+        $req->header("MIME-Version", "1.0");
+        $req->content($message);
+
+        $ua = new LWP::UserAgent;
+        $ua->request($req);
+    }
+}
+
+# Mail HTML document.
+# Params: filename, subject, recipient
+# Returns: none
+sub MailDocument()
+{
+    my $filename = shift(@_);
+    my $subject = shift(@_);
+    my @recipients = split/,/, shift(@_);
+    my $tmpstr = $/;
+
+    undef $/;
+    open(FILE, "$filename") or die "Cannot open $filename: $!\n";
+    my $content = <FILE>;
+    close(FILE);
+
+    foreach $email (@recipients)
+    {
+        $req = HTTP::Request->new(POST => "mailto:" . $email);
+        $req->header("Subject", $subject);
+        $req->header("Content-type", "text/html");
+        $req->header("Content-Transfer-Encoding", "7bit");
+        $req->header("MIME-Version", "1.0");
+        $req->content($content);
+
+        $ua = new LWP::UserAgent;
+        $ua->request($req);
+    }
+
+    $/ = $tmpstr;
+}

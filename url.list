@@ -1,0 +1,119 @@
+#############################################################################################
+# Default configuration block.
+#
+# These configuration values will be used for the sites that follow, unless they are
+# overridden by the site configuration values. Parameter names are case-sensitive.
+#
+# Auth       = "none"; or "username:password"
+# Diff       = "webdiff" to detect and highlight differences; or "none" to mail page as is.
+# HiColor    = "blue"; "yellow"; "pink"; or "grey".
+# Ignore     = list of comma-delimited section names containing ignore keywords.
+# IgnoreURL  = list of comma-delimited section names containing ignore URLs.
+# Tmin       = every token containing <= Tmin words will not be highlighted for differences.
+# Tmax       = every token containing >= Tmax words will not be checked for ignore keywords.
+# Proxy      = specify proxy "http://your.proxy.here:portnum" if you are behind one.
+# Email      = email address to send page to.
+# EmailLink  = email address to send URL to.
+#############################################################################################
+
+Auth      = none
+Diff      = webdiff
+Hicolor   = blue
+Ignore    = General.Date_Time
+IgnoreURL = Adverts
+Tmin      = 0
+Tmax      = 99999
+Email     = your_email@domain.net
+EmailLink = your_email@domain.net
+
+##########################################################################################
+# Sites to monitor
+#
+# Configuration values for each site is separated by a newline.
+# Parameter names are case-sensitive.
+# Parameter values override default values (for given site only) if specified.
+# URL, Name and Prefix parameters must be specified for each site.
+##########################################################################################
+
+URL = http://browserwatch.iworld.com/news.html 
+Name = Browser Watch
+Prefix = browse-watch
+
+URL = http://www.freshmeat.net/
+Name = Freshmeat
+Prefix = freshmeat
+Hicolor = grey
+
+URL = http://www.javaworld.com/
+Name = Java World
+Prefix = java-world
+
+URL = http://www.linuxgazette.com/
+Name = Linux Gazette
+Prefix = linux-gazette
+
+URL = http://www.mp3.com/
+Name = MP3.COM
+Prefix = mp3-com
+
+URL = http://www.pcmag.com/
+Name = PC Magazine
+Prefix = pcmag
+
+URL = http://www.pcweek.com/
+Name = PC Week
+Prefix = pcweek
+
+URL = http://www.sciam.com/currentissue.html
+Name = Scientic American
+Prefix = sci-american
+
+URL = http://www.sun.com/sunworldonline/
+Name = SunWorld Online
+Prefix = sunworld-online
+
+URL = http://www.winmag.com/
+Name = Windows Magazine
+Prefix = winmag
+
+URL = http://www.linuxresources.com/
+Name = Linux Resources
+Prefix = linux-resources
+
+URL = http://www.news.com/
+Name = CNET News
+Prefix = cnet-news
+
+URL = http://www.slashdot.org/
+Name = Slashdot.org
+Prefix = slashdot
+
+URL = http://segfault.org/
+Name = Segfault.org
+Prefix = segfault
+Hicolor = grey
+
+URL = http://www.linuxworld.com/
+Name = Linux World
+Prefix = linux-world
+
+URL = http://www.theregister.co.uk/
+Name = The Register
+Prefix = the-register
+
+URL = http://www.linuxtoday.com/opinions/
+Name = Linux Today
+Prefix = linux-today
+
+URL = http://headlines.yahoo.com/Full_Coverage/Tech/Linux/
+Name = Yahoo Linux News
+Prefix = yahoo-linux-news
+
+URL = http://www.betanews.com/
+Name = Betanews
+Prefix = betanews
+Hicolor = grey
+
+URL = http://www.wired.com/news/
+Name = Wired News
+Prefix = wired-news

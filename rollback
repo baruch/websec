@@ -1,0 +1,10 @@
+################################################################
+# Rollback all files in archive/ directory by one day.
+################################################################
+ 
+foreach oldfile (archive/*.old.html)
+    set tmpfile = $oldfile:r
+    set newfile = $tmpfile:r.html
+    echo "Processing $oldfile => $newfile ..."
+    cp $oldfile $newfile
+end

@@ -1,0 +1,442 @@
+WEB SECRETARY Version 1.3.4
+
+
+1. OVERVIEW
+
+Web Secretary is a web page monitoring software. However, it goes beyond the
+normal functionalities offered by such software. Not only does it detect
+changes based on content analysis (instead of date/time stamp or simple
+textual comparison), it will email the changed page to you WITH THE NEW
+CONTENT HIGHLIGHTED!
+
+Web Secretary is actually a suite of two Perl scripts called websec and
+webdiff. websec retrieves web pages and email them to you based on a URL
+list that you provide. webdiff compares two web pages (current and archive)
+and creates a new page based on the current page but with all the
+differences highlighted using a predefined color.
+
+Personally, I put Web Secretary on crontab to monitor a large number of web
+pages. When the highlighted pages are delivered to me, I use procmail to
+sort them out and file them into another folder. Sometimes, when I am busy,
+I will not have time to accessing the web for a few days. However, with Web
+Secretary, I can always access the "archive" that it has created for me at
+my own leisure.
+
+
+2. DEPENDENCIES
+
+Web Secretary should be able to run on all Unix systems with a Perl
+interpreter (and LWP module) installed. At present, it has only been tested
+on Linux.
+
+
+3. INSTALLATION AND CONFIGURATION
+
+Installing Web Secretary is easy.
+
+- Un-tar the distribution. The files will be uncompressed into a directory
+  called websec/.
+
+- Change directory to websec/.
+
+- Edit the first lines in websec and webdiff to reflect the actual location
+  of the Perl interpreter on your system.
+
+- Edit the URL list called url.list. Please refer to SECTION 5 for more
+  information on this.
+
+- Edit the ignore keyword/URL file "ignore.list". Please refer to SECTION 6
+  and 7 for more information on this file.
+
+
+4. USAGE 
+
+You can run Web Secretary whenever you want to monitor the changes in your
+URL list by typing 'websec <URL list>'.
+
+Alternatively, you can add Web Secretary to your crontab and run it on a
+regular basis (eg. daily). You can even have different URL list files and
+run them at different intervals (eg. hourly, daily, weekly etc.)
+
+It goes without saying that you can use Web Secretary to monitor its own
+homepage so that you can be informed of the latest news and updates.
+
+Web Secretary is available at:   http://homemade.hypermart.net/websec/
+                           or:   http://homemade.virtualave.net/websec/
+
+
+5. URL LIST
+
+The URL list consists of one or more sections separated by newlines.
+
+The following parameters (case-sensitive) are recognized in each section:
+
+    URL        - URL of web page to monitor
+
+    Auth       - Authentication information in "username:password" format. 
+                 Put "none" if no authentication needed.
+
+    Name       - Name of web site. Pages delivered to you will have the
+                 following format: "Name - Date (Day)" eg. "PC Magazine - 4
+                 Sep 98 (Fri)"
+
+    Prefix     - Prefix of filenames for archive files of web pages created
+                 by Web Secretary.
+
+    Diff       - Put "none" if you want Web Secretary to always mail this
+                 page to you instead of checking for and highlighting
+                 changes in the page.  Put "webdiff" if you want Web
+                 Secretary to check for changes.
+
+    Hicolor   -  Color used to highlight new or changed content. Currently,
+                 four colors are defined. They are: blue, pink, yellow and
+                 grey. You can also supply your own HTML color tag in the
+                 form "#rrggbb".
+
+    Ignore     - Comma-delimited List of section names containing ignore
+                 keywords. There must be NO SPACES between delimiters and
+                 section names. The ignore sections and keywords are stored
+                 in a file called "ignore.list".
+
+    IgnoreURL  - Comma-delimited List of section names containing ignore
+                 URLs. There must be NO SPACES between delimiters and
+                 section names. The ignore sections and keywords are stored
+                 in a file called "ignore.list".
+
+    Tmin       - Every token containing <= Tmin words will not be highlighted
+                 for differences.
+
+    Tmax       - Every token containing >= Tmax words will not be checked for
+                 ignore keywords.
+
+    Proxy      - Specify proxy "http://your.proxy.here:portnum" if you are
+                 using one. (Alternatively, you can make use of the
+                 "http_proxy" environment variable)
+
+    ProxyAuth  - Specify proxy authentication in "username:password" format.
+                 The code for this feature was contributed by Volker Stampa.
+
+    Email      - Comma-delimited list of email addresses to send highlighted
+                 pages to.
+
+    EmailLink  - Comma-delimited list of email addresses to send URL of
+                 changed pages to.
+
+    Digest     - true|false or yes|no. This works only if EmailLink is
+                 specified. It consolidates all the changed URLs and sends
+                 them in one email.
+
+Any line which begins with a '#' is treated as comment and ignored.
+
+If a section does not contain a URL entry, the values provided will be
+treated as the default for the following sections.
+
+For example,
+
+    # Defaults
+    Auth = none
+    Diff = webdiff
+    Hicolor = blue
+    Ignore = General,Date_Time
+    IgnoreURL = Adverts
+    Tmin = 1
+    Tmax = 10
+    Proxy = http://proxy.nus.edu.sg:8080
+    Email = vchew@post1.com
+
+    # Web page to monitor which does not require authentication
+    URL = http://browserwatch.iworld.com/news.html 
+    Name = Browser Watch
+    Prefix = browsewatch
+
+    # New defaults with authentication information
+    Auth = user:password
+
+    # More web pages to monitor which requires authentication
+    URL = http://www.infoworld.com
+    Name = Infoworld
+    Prefix = infoworld
+
+    URL = http://developer.javasoft.com/
+    Name = Java Developer Central
+    Prefix = jdc
+
+
+6. IGNORE KEYWORDS
+
+When determining which parts of a particular web page has changed, you may
+want to skip those paragraphs that contains certain predefined words. For
+example, pages like InfoWorld, PC Magazine and PC Week often contain the
+current date/time regardless of whether there is new or changed content. In
+such cases, you can use IGNORE KEYWORDS to skip those paragraphs which
+contains date/time information.
+
+Ignore keywords are stored in a file called "ignore.txt" in the same
+directory as websec. Like the URL list, the ignore keywords are partitioned
+into different sections. Each section has a user-defined name. An example is
+shown below:
+
+        [General]
+        all rights reserved
+        an error occurred
+        click here
+        comments
+        copyright
+
+        [Date_Time]
+        January\s+\d{1,2}
+        February\s+\d{1,2}
+        March\s+\d{1,2}
+        April\s+\d{1,2}
+        May\s+\d{1,2}
+    
+In the example above, there are two sections: "General" and "Date_Time".
+You can use them in the URL list as follows:
+
+    Ignore = General
+
+You can also use multiple sections at one go:
+
+    Ignore = General,Date_Time
+
+If you use certain ignore keywords regularly, you might want to add them to
+a defaults section in the URL list.
+
+Ignore keywords can contain regular expressions. For example, the ignore
+keyword "January\s+\d{1,2}" tells websec to look for the string "January",
+followed by one or more spaces, followed by at least one but not more than
+two digits.
+
+Two sections of ignore keywords are supplied in this distribution. "General"
+contains some general ignore keywords which you may want to use. "Date_Time"
+contains date/time detectors coded using regular expressions. Feel free to
+add your own!
+
+
+7. IGNORE URLS
+
+Most advertisements in webpages are of the following form:
+
+        <A HREF="http://page.url.com/advert/cgi-bin/" ...>
+        <IMG SRC="advert.animated.gif" ...>
+        Click here for free beer!
+        </A>
+
+Such advertisements can be ignored when running webdiff using ignore URLs.
+
+Ignore URLs are also stored in "ignore.txt". They contain all of parts of
+the URL referred to by the <A HREF> tag which you want to ignore. An example
+is shown below:
+
+        [Adverts]
+        page.url.com/advert/cgi-bin/
+    
+Use the "Adverts" section in the URL list as follows:
+
+    IgnoreURL = Adverts
+
+You can also use multiple sections at one go:
+
+    IgnoreURL = Adverts1,Adverts2
+
+If you use certain ignore URLs regularly, you might want to add them
+to a defaults section in the URL list.
+
+Like ignore keywords, ignore URLs can contain regular expressions.
+
+An "Adverts" section is supplied in this distribution. Feel free to add your
+own!
+
+
+8. DIGEST
+
+This feature is contributed by Matti Airas:
+
+> Hi,
+
+> I noticed a small bug in websec. Since I'm using a text-based MUA, I'm
+> not interested in getting the HTML pages, but only the notifications.
+> However, on line 214 the recipient email address is $email, not
+> $emailLink.
+
+> Also, since I found the separate notification mails inconvenient, I
+> implemented a new configuration variable "Digest = false|true", which
+> makes the notifications to come in a single email.
+
+> The modified file is attached to this mail. I hope you find it useful.
+
+> --
+> Matti Airas
+
+
+9. INSTALLING LWP
+
+Websec requires the Perl module 'LWP' to work. The quickest way to install
+this module is to type:
+
+> perl -MCPAN -e 'install Bundle::LWP'
+
+at the command line.
+
+Thanks to Jeff for contributing this tip!
+
+
+10. HISTORY
+
+1.3.4 - Released on 6 Jun 2000
+
+* Added tip on how to install LWP in READE. Thanks to Jeff for contributing
+  this info!
+
+* Fixed a bug with $emailLink and added digest format. Thanks to Matti Airas
+  for contributing this!
+
+1.3.3 - Released on 31 Jan 2000
+
+* Added MIME-Version header to email sent. Thanks to Joe Rumsey for pointing
+  this out. This fixes problems under certain mailers, where messages are
+  treated as plain text instead of HTML.
+
+1.3.2 - Released on 2 Dec 1999
+
+* Added <CODE> as a recognized tag.
+
+* Added the ability to send updated page to multiple recipients.
+
+* Added the ability to send URL link instead of entire page to recipients.
+  Check "EmailLink" tag.
+
+* "Alexander Lazic" <al@eunet.at> suggested using strftime instead of the
+  Unix command "date". This has been fixed.
+
+1.31 - Released on 17 Apr 1999
+
+* Volker Stampa contributed some code to allow websec to work with proxies
+  that require authentication.
+
+1.3  - Released on 20 Mar 1999
+
+* Trevor Boicey suggested allowing the use of arbitrary HTML colors in the
+  "-hicolor" parameter of webdiff. This feature has been included.
+
+* Webdiff had some problems with a tag of this nature: <A HREF="xxx <yyy>">,
+  first found in the ZDNET series of web sites.  This has been fixed.
+
+* A new "ignore URL" feature has been included. This allows certain
+  hyperlinks sections in a web page to be skipped during webdiff processing.
+
+* All ignore keywords and URLs have been consolidated into one file. 
+
+1.22 - Released on 13 Jan 1999
+
+* A small shell script has been included to "rollback" the files in the
+  archive directory for one session.
+
+* Proxy settings can now be supplied via the "http_proxy" environment
+  variable. However, the "Proxy" parameter will take precedence over the
+  environment variable.
+
+* When checking for short and long tokens (based on the Tmin and Tmax
+  parameters), any mangled HTML tags are first stripped from the token before
+  word count is done.  Therefore, word count is done on the "plain text"
+  version of the token.
+
+* When checking for ignore keywords, the token which possibly contains
+  mangled HTML tags is first checked. Then it is stripped of any mangled
+  HTML tags and checked again. This is cater for cases where the mangled HTML
+  tag precedes or follows an actual word without any spacing. Hence the
+  entire string is treated as one word, and will fail to match any of the
+  ignore keywords.
+
+1.21 - Released on 1 Jan 1999 (Happy New Year!)
+
+* Made minor modification to try downloading any URL up to 3 times before
+  giving up. I did not find it necessary to include this as a parameter,
+  so it was hard-coded.
+
+1.2  - Released on 25 Dec 1998 (Merry Christmas!)
+
+* Rewrote Web Secretary to use the LWP module in Perl for HTTP retrieval and
+  email transmission. Hence, it is no longer necessary to have 'lynx' and
+  'metasend' installed on your system in order to use Web Secretary.
+
+* Since Web Secretary was rewritten to use the LWP module (instead of lynx),
+  for HTTP retrieval, I had to add a 'Proxy' parameter for folks (like
+  myself) who are behind a firewall.
+
+* Added the 'Tmin' parameter to ignore short tokens when highlighting
+  differences. This is useful because certain sites have tokens containing
+  one or two words which change constantly but are uninteresting to track.
+
+* Added the 'Tmax' parameter to prevent long tokens from being processed by
+  the ignore keywords filter. This was included because certain sites have
+  tokens containing the current day/month etc. which I want to filter off. 
+  But at the same time, I do not want to filter off long paragraphs that
+  contain these words.
+
+1.11 - Released on 10 Oct 1998
+
+* Minor modification to the comparison algorithm so that it won't be fooled
+  by extra spaces in the tokens.
+
+1.1  - Released on 25 Sep 1998
+
+* Improved the detection algorithm for multiple consecutive mangled HTML
+  tags so that they will not be incorrectly highlighted.
+
+* Support for Javascript and stylesheet tags so that they will not be
+  incorrectly highlighted.
+
+1.0  - First released on 4 Sep 1998.
+
+The idea for this tool originated from a software package called Tierra
+Highlights for the PC (http://www.tierra.com). I tried it out for a while
+and found it to be extremely useful.  However, like most PC tools, it was
+closely tied to the PC that you installed the software on. If you are
+working on some other computer, you will not be unable to access the pages
+being monitored. At that time, I was already convinced that email is the
+best "push" platform the world has ever seen, so why not deliver the changed
+pages via email?
+
+I bounced the idea around for a while amongst friends and colleagues, and
+when I could not find any sucker to write this for me :-), I wrote the first
+version in a crazy moment of unrest using shell script. However, this first
+version was not very configurable, so I quickly wrote the second version in
+Perl.
+
+So far, however, the program does nothing but retrieve pages and email them
+to me. I quickly added a quick hack to do a diff between an archive page
+and the current page before deciding whether to email the page, but the
+scheme proved too brittle for detecting changes in most cases.
+
+I lived with this scheme for a while. Finally, lunacy got the better of me.
+I figured out a quick and dirty way of doing what Tierra Highlights does,
+and actually thought I could implement the whole idea in one day. It took
+two days instead, and the initial version sucked like hell and failed
+miserably on many pages. However, you should have seen the grin on my face
+when it highlighted PC Magazine and PC Week properly. :-)
+
+Like most programmers who are crazy enough to think that they can "do this
+thing in one day", I spent the next two weeks feverishly debugging the
+project. Everyday, I will add new pages to the URL list, and debug those
+that failed to be highlighted. Finally, I have something which I use on a
+daily basis now and is prepared to share with the rest of the world.
+
+
+11. ACKNOWLEDGEMENT
+
+I would like to thank the GNU people. I don't know them personally, but they
+have blessed us with free and great tools such as Linux, gcc, emacs, Perl,
+fetchmail etc. which I now use on a daily basis. In the trails of their
+selfless spirit, I will also like to share Web Secretary in the same way,
+and hope many people besides me find it useful.
+
+I would also like to thank Chng Tiak Jung, a friend and mentor who inspires
+me to learn at least one new thing everyday. I am sure if he continues at
+his current pace, I will never be able to catch up with him!
+
+The article "Some Simpler Applications Using LWP" (http://webreview.com/wr/
+pub/97/12/12/bookshelf/index.html) by Clinton Wong in webreview.com inspired
+me to modify Web Secretary to use the LWP library for HTTP retrieval and
+email transmission.
+
