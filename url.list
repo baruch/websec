@@ -93,11 +93,6 @@ URL = http://www.slashdot.org/
 Name = Slashdot.org
 Prefix = slashdot
 
-URL = http://segfault.org/
-Name = Segfault.org
-Prefix = segfault
-Hicolor = grey
-
 URL = http://www.linuxworld.com/
 Name = Linux World
 Prefix = linux-world
