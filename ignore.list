@@ -51,7 +51,7 @@ http://doublclick4.net
 [\d,]+ tips, [\d,]+ tip views
 
 [cvsweb]
-\d+ (months?|weeks?|days?|hours?|minutes?)
+\d+ (years?|months?|weeks?|days?|hours?|minutes?)
 
 __END__
 
