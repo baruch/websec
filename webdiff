@@ -73,6 +73,9 @@ GetOptions(
 		"debug"			=> \$debug,
 		"ignorefile=s"	=> \$ignoreFile);
 
+# Remove trailing slash from basedir, we will add it ourself everywhere needed
+$basedir =~ s/\/$//;
+
 # Make sure some essential option values are supplied
 if ($oldpage eq "")
 {
@@ -105,7 +108,7 @@ if ($ignore ne "none")
     $ignore = "," . $ignore . ",";
     $ignorelist = "";
     $ignoreStartRead = 0;
-    open(IGNORE, "< $basedir$ignoreFile") or die "Cannot open $basedir$ignoreFile: $!\n";
+    open(IGNORE, "< $basedir/$ignoreFile") or die "Cannot open $basedir/$ignoreFile: $!\n";
     while(<IGNORE>)
     {
         chomp;
@@ -125,7 +128,7 @@ if ($ignoreurl ne "none")
     $ignoreurl = "," . $ignoreurl . ",";
     $ignorelist = "";
     $ignoreStartRead = 0;
-    open(IGNORE, "< $basedir$ignoreFile") or die "Cannot open $basedir$ignoreFile: $!\n";
+    open(IGNORE, "< $basedir/$ignoreFile") or die "Cannot open $basedir/$ignoreFile: $!\n";
     while(<IGNORE>)
     {
         chomp;
