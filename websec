@@ -231,7 +231,7 @@ sub HandleSite() {
     $page_previousExists = 1;
     open( FILE, $page_previous ) or $page_previousExists = 0;
     close(FILE);
-    $subj    = "$addsubject $name$today";
+    $subj    = "$addsubject $name$today - $url";
     $webdiff =
 "$webdiffbin --basedir=$base --archive=$page_previous --current=$page_current --out=$outgoing "
       . "--hicolor=$hicolor --ignore=$ignore --ignoreurl=$ignoreurl --tmin=$tmin --tmax=$tmax";
