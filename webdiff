@@ -287,8 +287,8 @@ sub PerformDiff() {
                 $token = "###>>>". $token ."<<<###";
             }
             $token =
-                    "<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=0><TR>".
-                    "<TD BGCOLOR=$hicolor>" . $token . "</TD></TR></TABLE>";
+                    "<span style=\"background-color: $hicolor\">"
+                    . $token . "</span>";
             $changeStatus = 1;
         }
     }

@@ -5,6 +5,9 @@
 
     * Special support for konqueror for Program directive.
 
+    * Replace TABLE tags with SPAN tags to highlight differences, this is
+      reported to work better for some users.
+
 1.7.0 - Released on 31-May-2003
 
     * Add MailFrom, to set the address from which the mail will appear to come.
