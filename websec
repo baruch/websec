@@ -61,6 +61,14 @@ mkdir $archive,0750 if !-d $archive;
 $outgoing = "$base/index.html";
 $page_current = "$base/retrieve.html";
 
+# Location of webdiff, if it's in the same directory as websec, use it,
+# this enables simply opening the archive and using the program inplace.
+use FindBin;
+$webdiffbin = "$FindBin::Bin/webdiff";
+if (! -e $webdiffbin) {
+	$webdiffbin = "webdiff";
+}
+
 # prepare digest
 @digest = ();
 
@@ -220,7 +228,7 @@ sub HandleSite()
     close(FILE);
     $subj = "$addsubject $name - $today";
     $webdiff =
-        "webdiff --basedir=$base --archive=$page_previous --current=$page_current --out=$outgoing " .
+        "$webdiffbin --basedir=$base --archive=$page_previous --current=$page_current --out=$outgoing " .
         "--hicolor =$hicolor --ignore=$ignore --ignoreurl=$ignoreurl --tmin=$tmin --tmax=$tmax";
 
     # Download URL using LWP
