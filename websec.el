@@ -34,7 +34,8 @@
 (defvar url-list-keywords
   '( "AsciiMarker" "Auth" "DateFMT" "Diff" "Digest" "Email" "EmailError"
      "EmailLink" "Hicolor" "Ignore" "IgnoreURL" "MailFrom" "Name" "Prefix"
-     "Program" "Proxy" "ProxyAuth" "RandomWait" "Tmax" "Tmin" "URL" "UserAgent" ))
+     "Program" "ProgramDigest" "Proxy" "ProxyAuth" "RandomWait" "Tmax" "Tmin"
+     "URL" "UserAgent" ))
 
 (define-generic-mode 'url-list-mode
   ;; comment-list

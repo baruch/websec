@@ -21,7 +21,7 @@ endif
 syn case ignore
 syn keyword urllistCommand  AsciiMarker Auth DateFMT Diff Digest
 syn keyword urllistCommand  Email EmailError EmailLink Hicolor Ignore IgnoreURL
-syn keyword urllistCommand  MailFrom Name Prefix Program 
+syn keyword urllistCommand  MailFrom Name Prefix Program ProgramDigest
 syn keyword urllistCommand  Proxy ProxyAuth RandomWait Tmax Tmin
 syn keyword urllistCommand  URL UserAgent
 
