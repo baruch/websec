@@ -24,53 +24,22 @@ votes
 copyright
 
 [Date_Time]
-January \d+
-February \d+
-March \d+
-April \d+
-May \d+
-June \d+
-July \d+
-August \d+
-September \d+
-October \d+
-November \d+
-December \d+
-Jan \d+
-Feb \d+
-Mar \d+
-Apr \d+
-Jun \d+
-Jul \d+
-Aug \d+
-Sep \d+
-Oct \d+
-Nov \d+
-Dec \d+
-\d+ January
-\d+ February
-\d+ March
-\d+ April
-\d+ May
-\d+ June
-\d+ July
-\d+ August
-\d+ September
-\d+ October
-\d+ November
-\d+ December
-\d+ Jan
-\d+ Feb
-\d+ Mar
-\d+ Apr
-\d+ Jun
-\d+ Jul
-\d+ Aug
-\d+ Sep
-\d+ Oct
-\d+ Nov
-\d+ Dec
-\d+\/\d+\/\d+
+\d+ Jan(uary)? \d+
+\d+ Feb(ruary)? \d+
+\d+ Mar(ch)? \d+
+\d+ Apr(il)? \d+
+\d+ May \d+
+\d+ June? \d+
+\d+ July? \d+
+\d+ Aug(ust)? \d+
+\d+ Sep(tember)? \d+
+\d+ Oct(ober)? \d+
+\d+ Nov(ember)? \d+
+\d+ Dec(ember)? \d+
+# 28-03-2005 28/03/2005 28.3.2005 2005-03-28
+\d+[\/\-.]\d+[\/\-.]\d+
+# 02:24 PST
+\d{2}:\d{2} [A-Z]{3}
 
 [Adverts]
 http://www.news.com/cgi-bin/acc_clickthru
@@ -81,6 +50,8 @@ http://doublclick4.net
 [\d,]+ scripts, [\d,]+ downloads
 [\d,]+ tips, [\d,]+ tip views
 
+[cvsweb]
+\d+ (months?|weeks?|days?|hours?|minutes?)
 
 __END__
 
