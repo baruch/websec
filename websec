@@ -37,7 +37,7 @@ print "Web Secretary Ver 1.4.0\n";
 print "By Chew Wei Yih Copyleft (c) 1998\n\n";
 
 # Initialize parameters
-if (-e url.list) {
+if (-e "url.list") {
 	$base = ".";
 } else {
 	$base= $ENV{HOME} . "/.websec";
