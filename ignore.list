@@ -21,6 +21,7 @@ the current week
 total votes
 visits
 votes
+copyright
 
 [Date_Time]
 January \d+
@@ -74,6 +75,7 @@ Dec \d+
 [Adverts]
 http://www.news.com/cgi-bin/acc_clickthru
 http://ads2.zdnet.com/adverts/
+http://doublclick4.net
 
 [VIM]
 [\d,]+ scripts, [\d,]+ downloads
