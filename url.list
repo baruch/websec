@@ -124,6 +124,23 @@ Name = VIM
 Prefix = vim
 Ignore = General,Date_Time,VIM
 
+URL = http://www.joelonsoftware.com/
+Name = Joel on Software
+Prefix = joelonsoftware
+
+URL = http://www.openbsd.org/cgi-bin/cvsweb/src/sys/sys/tree.h
+Name = OpenBSD tree implementation
+Prefix = openbsd-tree
+Ignore = cvsweb
+
+URL = http://slashdot.org/
+Name = Slashdot
+Prefix = slashdot
+
+URL = http://freshmeat.net/
+Name = FreshMeat
+Prefix = freshmeat
+
 __END__
 
 =head1 NAME
