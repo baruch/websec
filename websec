@@ -29,6 +29,7 @@
 
 use LWP::UserAgent;
 use POSIX qw(strftime);
+use File::Spec;
 use Getopt::Long;
 use Pod::Usage;
 
@@ -280,18 +281,20 @@ sub HandleSite() {
 "Highlighting differences from previous version of webpage ...\n";
                 $rc = system($webdiff);
                 if ( $rc != 0 ) {
-                    print "Sending highlighted page to $email ...\n";
                     if ( $email ne "" ) {
+						print "Sending highlighted page to $email ...\n";
                         MailDocument( $outgoing, $subj, $email );
                     }
                     if ( $emailLink ne "" ) {
+						print "Sending link to $emailLink ...\n";
                         if ( ( $digest ne "no" ) && ( $digest ne "false" ) ) {
                             push @digest, $url;
                             ($digestEmail) or ( $digestEmail = $emailLink );
                         }
                         else {
+							my $filepath = File::Spec->rel2abs($page_previous);
                             $linkmsg =
-"The contents of the following URL has changed:\n\n$url\n";
+"The contents of the following URL has changed:\n$url\n\nIt can also be found at:\nfile://$filepath\n";
                             MailMessage( $linkmsg, $subj, $emailLink );
                         }
                     }
