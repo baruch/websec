@@ -1,4 +1,4 @@
-WEB SECRETARY Version 1.4.0
+WEB SECRETARY Version 1.5.0
 
 
 1. OVERVIEW
@@ -282,6 +282,16 @@ Thanks to Jeff for contributing this tip!
 
 
 10. HISTORY
+
+1.5.0 - Release on 02 May 2003
+
+* Added UserAgent option to control the user agent sent by the web client. This
+  enables access to websites which lockdown unknown browsers.
+* Enabled the user to run websec from the current directory without the
+  multi-user ~/.websec/ setup, the multi-user setup is the default unless you
+  run websec from a directory with the url.list file.
+* Moved the manpages to pod and into the files, this enables fancy options such
+  as -help and -man to work and reduces duplication of effort.
 
 1.4.0 - Released on 31 Oct 2002
 

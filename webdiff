@@ -2,7 +2,7 @@
 
 #################################################################################
 #
-# Webdiff Ver 1.4.0
+# Webdiff Ver 1.5.0
 #
 # Compares two HTML pages (current and archive) and outputs a new page based
 # on the current page but with the differences between the two pages highlighted.

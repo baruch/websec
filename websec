@@ -2,7 +2,7 @@
 
 #################################################################################
 # 
-# Web Secretary Ver 1.4.0
+# Web Secretary Ver 1.5.0
 #
 # Retrieves a list of web pages and send the pages via email to
 # a designated recipient. It can optionally compare the page with a
@@ -33,7 +33,7 @@ use Getopt::Long;
 use Pod::Usage;
 
 # Print introduction
-print "Web Secretary Ver 1.4.0\n";
+print "Web Secretary Ver 1.5.0\n";
 print "By Chew Wei Yih Copyleft (c) 1998\n\n";
 
 # Initialize parameters
@@ -99,7 +99,7 @@ local %defaults =
     Tmax      => 99999,
     AddSubject=> "",
     Digest    => "false",
-    UserAgent => "WebSec/1.4.0",
+    UserAgent => "WebSec/1.5.0",
 );
 %siteinfo = %defaults;
 
