@@ -17,6 +17,9 @@
     * Add "ascii" color highlighting from Javier M. Mora. Instead of using color
       to highlight it uses ascii characters around the change.
 
+    * Add Emacs mode to highlight url.list, it is likely to be in error, a user
+      help with it would be most helpful as I'm not an Emacs user.
+
 1.6.0 - Released on 05 May 2003
 
 * Added DateFMT feature to set Date Formats in mail subjects.
@@ -186,3 +189,5 @@ thing in one day", I spent the next two weeks feverishly debugging the
 project. Everyday, I will add new pages to the URL list, and debug those
 that failed to be highlighted. Finally, I have something which I use on a
 daily basis now and is prepared to share with the rest of the world.
+
+vim:set et ts=4:
