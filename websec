@@ -171,8 +171,12 @@ sub HandleInput() {
     }
 
     # Allow values from the environment
-    if ( $value =~ m/^\${([^}]+)}/ ) {
-        $value = $ENV{$1};
+    while ($value =~ m/\${([^}]+)}/) {
+        if (not exists $ENV{$1}) {
+            print STDERR "Used environment variable '$1' but it is not defined, aborting.\n";
+            exit 1;
+        }
+        $value =~ s/\${([^}]+)}/$ENV{$1}/;
     }
 
     $siteinfo{$keyword} = $value;

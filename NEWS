@@ -22,6 +22,9 @@
 
     * Add ViM syntax file to highlight url.list.
 
+    * Fixed usage of environment variables in definitions, also allowed using
+      multiple environment variables in a single line.
+
 1.6.0 - Released on 05 May 2003
 
 * Added DateFMT feature to set Date Formats in mail subjects.
