@@ -583,7 +583,7 @@ sub ShowDocument() {
         else {
             $status =
               system(
-                "mozilla -remote \"openurl(" . $outgoing . ",new-tab)\"" );
+                "mozilla -remote \"openurl(file:" . $outgoing . ",new-tab)\"" );
             if ( $status ne 0 ) {
                 print "Running mozilla returned status: " . $status . "\n";
             }
