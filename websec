@@ -68,6 +68,13 @@ mkdir $base,    0750 if !-d $base;
 mkdir $archive, 0750 if !-d $archive;
 $page_current = "$base/retrieve.html";
 
+# Red Hat has sendmail in /usr/sbin/sendmail, but LWP::Protocol::mailto
+# expects it in /usr/lib/sendmail.  Revert to the Red Hat location if there
+# is no executable at the expected location.
+use vars qw($LWP::Protocol::mailto::SENDMAIL);
+$LWP::Protocol::mailto::SENDMAIL = "/usr/sbin/sendmail"
+  unless -x "/usr/lib/sendmail";
+
 # Location of webdiff, if it's in the same directory as websec, use it,
 # this enables simply opening the archive and using the program inplace.
 use FindBin;
@@ -523,7 +530,8 @@ sub MailDocument() {
         $req->content($content);
 
         $ua = new LWP::UserAgent;
-        $ua->request($req);
+        my $resp = $ua->request($req);
+        die "Error mailing document: ".$resp->message()."\n" if $resp->is_error;
     }
 
     $/ = $tmpstr;
