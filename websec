@@ -477,6 +477,14 @@ sub ShowDocument() {
             }
         }
     }
+    elsif ($program eq "konqueror") {
+        # konqueror from KDE has a small client application that helps with opening urls
+        # run 'kfmclient --commands' for help about the available commandline options
+        $status = system( "kfmclient openURL ".$outgoing." text/html" );
+        if ( $status ne 0 ) {
+            print "Displaying URL in konqueror returned status: " . $status . "\n";
+        }
+    }
     else {
 
         # other applications are currently just started

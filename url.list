@@ -16,7 +16,9 @@
 # Email      = email address to send page to.
 # EmailLink  = email address to send URL to.
 # EmailError = 0 or 1, zero will disable emailing on errors and 1 will enable (default 1)
-# Program    = application to call with the diff-file.
+# Program    = application to call with the diff-file, special cases:
+#              "mozilla", pages are opened in new tabs,
+#              "konqueror", pages are opened using "kfmclient openURL"
 #############################################################################################
 
 Auth      = none
@@ -201,9 +203,9 @@ The following parameters (case-sensitive) are recognized in each section:
     EmailLink  - Comma-delimited list of email addresses to send URL of
                  changed pages to.
 
-    Program    - Application to run with the diff-output-file. If "mozilla" is 
-                 specified here, the diffs are opened in new tabs of the Mozilla
-                 Browser.
+    Program    - application to call with the diff-file, special cases:
+                 "mozilla", pages are opened in new tabs,
+                 "konqueror", pages are opened using "kfmclient openURL"
 
     Digest     - true|false or yes|no. This works only if EmailLink is
                  specified. It consolidates all the changed URLs and sends
