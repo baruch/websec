@@ -37,7 +37,11 @@ print "Web Secretary Ver 1.4.0\n";
 print "By Chew Wei Yih Copyleft (c) 1998\n\n";
 
 # Initialize parameters
-$base= $ENV{HOME} . "/.websec/";
+if (-e url.list) {
+	$base = ".";
+} else {
+	$base= $ENV{HOME} . "/.websec";
+}
 $help = 0;
 $man = 0;
 
@@ -423,33 +427,29 @@ Base directory for configuration (~/.websec by default)
 
 =head1 DESCRIPTION
 
-B<Websec> is a web page monitoring software. 
-It will send you a changed web page with the contents
-highlighted.
+B<websec> is a web page monitoring software.  It will send you a changed web
+page with the contents highlighted.
 
-When called without an argument, B<websec> will try to
-open I<$HOME/.websec/url.list>, but you can provide the
---base argument to provide a different directory to read the
-config file from and keep the data in.
+The base directory is the place from which B<websec> will read the config files
+and in which it will store its data.
 
+When called without an argument, B<websec> will look for a base directory.
+If the current directory has url.list it will use it, otherwise it will try to
+use I<$HOME/.websec/>. You can also override this process with the I<--base>
+option.
 
-You can add a line like I<AddSubject = [websec]> to
-url.list, websec will add I<[websec]> to every subject
-as a first word when mail is sent. You can then easily detect
-this line by a mail filter.
+You can add a line like I<AddSubject = [websec]> to url.list, websec will add
+I<[websec]> to every subject as a first word when mail is sent. You can then
+easily detect this line by a mail filter.
 
+The keywords I<Retry>, I<Retrywait>, and I<Timeout> in url.list lets you specify
+the number of times to retry, time to wait between retries, and a timeout
+setting.
 
-The keywords I<Retry>, I<Retrywait>, and
-I<Timeout> in url.list lets you specify the number
-of times to retry, time to wait between retries, and a
-timeout setting.
-
-
-B<Websec> waits for a random number of seconds between
-retries up to the value specified by the I<Randomwait>
-keyword. This is to prevent websec from being blocked by
-websites that perform log analysis to find time similarities
-between requests.
+B<Websec> waits for a random number of seconds between retries up to the value
+specified by the I<Randomwait> keyword. This is to prevent websec from being
+blocked by websites that perform log analysis to find time similarities between
+requests.
 
 
 =head1 SEE ALSO
