@@ -45,11 +45,11 @@ $result = GetOptions("base=s"	=> \$base);
 $today = strftime "%d %B %Y (%a)", localtime;
 
 # Prepare pathnames.
-$archive = "archive/";
+$archive = "/archive/";
 mkdir $base,0750 if !-d $base;
 mkdir $base . $archive,0750 if !-d $base . $archive;
-$outgoing = $base . "index.html";
-$page_current = $base . "retrieve.html";
+$outgoing = $base . "/index.html";
+$page_current = $base . "/retrieve.html";
 
 # prepare digest
 @digest = ();
@@ -83,7 +83,7 @@ $page_current = $base . "retrieve.html";
 # Default return code
 $rc = 0;
 
-open ARGV, "$base/url.list" unless exists $ARGV[0];
+open ARGV, $base . "/url.list" unless exists $ARGV[0];
 
 # Loop through input file and process all sites listed
 while(<>)
