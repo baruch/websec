@@ -2,12 +2,13 @@
 
 #################################################################################
 #
-# Webdiff Ver 1.8.0
+# Webdiff
 #
 # Compares two HTML pages (current and archive) and outputs a new page based
 # on the current page but with the differences between the two pages highlighted.
 #
 # Copyright (C) 1998  Chew Wei Yih
+# Copyright (C) 2004,2005 Baruch Even <baruch@ev-en.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License

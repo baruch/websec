@@ -2,7 +2,7 @@
 
 #################################################################################
 # 
-# Web Secretary Ver 1.8.0
+# Web Secretary
 #
 # Retrieves a list of web pages and send the pages via email to
 # a designated recipient. It can optionally compare the page with a
@@ -10,6 +10,7 @@
 # modified page to the recipient instead.
 #
 # Copyright (C) 1998  Chew Wei Yih
+# Copyright (C) 2004,2005 Baruch Even <baruch@ev-en.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -41,7 +42,7 @@ use Pod::Usage;
 use File::Temp qw/tempfile/;
 
 # Print introduction
-print "Web Secretary Ver 1.8.0\n";
+print "Web Secretary Ver 1.9.0\n";
 print "By Chew Wei Yih Copyleft (c) 1998\n\n";
 
 # Initialize parameters
