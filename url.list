@@ -118,4 +118,5 @@ Prefix = wired-news
 URL = http://www.nongnu.org/websec/
 Name = Web Secretary
 Prefix = websec-homepage
+DateFMT = " - %Y-%m-%d"
 
