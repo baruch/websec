@@ -20,6 +20,8 @@
     * Add Emacs mode to highlight url.list, it is likely to be in error, a user
       help with it would be most helpful as I'm not an Emacs user.
 
+    * Add ViM syntax file to highlight url.list.
+
 1.6.0 - Released on 05 May 2003
 
 * Added DateFMT feature to set Date Formats in mail subjects.
