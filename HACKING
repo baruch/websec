@@ -1,0 +1,28 @@
+How to hack on WebSec
+---------------------
+
+So you've had an itch with WebSec, and you scratched it, Cool! You now want
+everyone to enjoy your improvement and get the world renowned status of WebSec
+hacker, so you send it over to the maintainer or to the mailing list. Since the
+maintainer tries to have a semblence of life and since the work his work is not
+only to apply a patch it takes a lot of time to get the patch applied.
+
+The way to make patches be applied faster try to make sure the maintainer needs
+to do as little work as possible. Here are a few hints:
+
+- Follow the coding style of the current code.
+  The maintainer is not really a Perl coder and doesn't have a well defined
+  style for Perl programming he just follows his aesthetics sense, follow his
+  and he'll have less to modify in the code.
+  Suggestions for better Perl Coding Style are always welcome, but don't force
+  it down his throat :-)
+
+- Add a few lines to the NEWS file, put them at the very start of the file or
+  you could add them in the text of your patch submission, this way the
+  maintainer won't need to actually make his function to apply the patch.
+
+- Is it a new feature you did? Great, But did you add to the documentation the
+  new feature? Who else is better qualified to fix the now outdated docs than
+  the author of the patch.
+
+That's all folks.
