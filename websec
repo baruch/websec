@@ -268,10 +268,9 @@ sub HandleSite() {
     }
     #$req->push_header("Accept" => "text/html, text/plain, text/*, */*");
     if (not $feature_compress) {
-        print "No feature compress\n";
         $req->push_header("Accept-Encoding" => "identity");
-    } else { 
-        print "YES feature compress\n";
+    } else {
+        $req->post_header("Accept-Encoding" => "gzip, identity");
     }
 
     # Try up to '$retry' times to download URL
