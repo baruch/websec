@@ -26,25 +26,7 @@
 #################################################################################
 
 use Getopt::Long;
-
-# Print help if no arguments passed
-if ($#ARGV <= 0)
-{
-    print "Webdiff Ver 1.4.0\n";
-    print "By Chew Wei Yih Copyleft (c) 1998\n\n";
-    print "Options:\n";
-    print "  --archive=<pathname>	Archive HTML file\n";
-    print "  --current=<pathname>	Current HTML file\n";
-    print "  --out=<pathname>		Output HTML file (with highlighting)\n";
-    print "  --basedir=<pathname>	Base directory for files\n";
-    print "  --hicolor=<color>		Highlight color (Def: blue, yellow, pink, grey or #rrggbb)\n";
-    print "  --ignore=<filelist>	Comma-delimited list of named sections containing ignore keywords\n";
-    print "  --ignoreurl=<filelist>	Comma-delimited list of named sections containing ignore urls\n";
-    print "  --tmin=<number>		Don't check if token contains <= given no. of words\n";
-    print "  --tmax=<number>		Don't ignore if token contains >= given no. of words\n";
-    print "  --debug                Debug messages\n\n";
-    exit -1;
-}
+use Pod::Usage;
 
 # Initialize parameters
 $oldpage    = "";
@@ -60,7 +42,11 @@ $ignoreFile = "ignore.list";
 $basedir	= $ENV{HOME} . "/.websec/";
 
 # Parse options
+$help = 0;
+$man = 0;
 GetOptions(
+		"help|?"		=> \$help,
+		"man"			=> \$man,
 		"basedir=s"		=> \$basedir,
 		"archive=s"		=> \$oldpage,
 		"current=s"		=> \$curpage,
@@ -71,7 +57,12 @@ GetOptions(
 		"tmin=i"		=> \$tmin,
 		"tmax=i"		=> \$tmax,
 		"debug"			=> \$debug,
-		"ignorefile=s"	=> \$ignoreFile);
+		"ignorefile=s"	=> \$ignoreFile)
+	or pod2usage(0);
+
+pod2usage(1) if ($help);
+pod2usage(-exitstatus => 0, -verbose => 2) if $man;
+
 
 # Remove trailing slash from basedir, we will add it ourself everywhere needed
 $basedir =~ s/\/$//;
@@ -387,3 +378,82 @@ sub TokenContainsHlinkEnd()
     return 1 if $token =~ m:~~~~/A\@\@\@\@:i;
     return 0;
 }
+
+__END__
+
+=head1 NAME
+
+webdiff - Find and Highlight Differences Between Webpages
+
+=head1 SYNOPSIS
+
+webdiff [options]
+
+
+=head1 OPTIONS
+
+=over 8
+
+=item B<--help>
+
+Print a brief help message and exits.
+
+=item B<--man>
+
+Prints the manual page and exits.
+
+=item B<--archive>=<pathname>
+
+Archive HTML file
+
+=item B<--current>=<pathname>
+
+Current HTML file
+
+=item B<--out>=<pathname>
+
+Output HTML file (with highlighting)
+
+=item B<--basedir>=<pathname>
+
+Base directory for files
+
+=item B<--hicolor>=<color>
+
+Highlight color (Def: blue, yellow, pink, grey or #rrggbb)
+
+=item B<--ignore>=<filelist>
+
+Comma-delimited list of named sections containing ignore keywords
+
+=item B<--ignoreurl>=<filelist>
+
+Comma-delimited list of named sections containing ignore urls
+
+=item B<--tmin>=<number>
+
+Don't check if token contains <= given no. of words
+
+=item B<--tmax>=<number>
+
+Don't ignore if token contains >= given no. of words
+
+=item B<--debug>
+
+Debug messages
+
+=back
+
+=head1 DESCRIPTION
+
+B<webdiff> will compare two webpages and create an output file with the changesw
+highlighted.
+
+
+B<webdiff> is internal to B<websec> and isn't well documented.
+
+=head1 AUTHOR
+
+Victor Chew is the original author of this software and
+Baruch Even is continuing the maintenance.
+
