@@ -177,22 +177,8 @@ close(OLDPAGE);
 close(CURPAGE);
 
 # Mangle some HTML tags to a form suitable for analysis
-$oldpage =~ s/[\r\n]|\s\s/ /sig;    # Handle MSDOS-style line separators
-$newpage =~ s/[\r\n]|\s\s/ /sig;
-$oldpage =~ s/&nbsp;/\@\@\@\@&nbsp;~~~~/sig;   # Handle non-breaking white space
-$newpage =~ s/&nbsp;/\@\@\@\@&nbsp;~~~~/sig;
-$oldpage =~ s/<A(\s+[^>]*)<([^>]*)>([^>])*>/~~~~A$1~~~~$2\@\@\@\@$3\@\@\@\@/sig
-  ;    # Handle nested brackets
-$newpage =~ s/<A(\s+[^>]*)<([^>]*)>([^>])*>/~~~~A$1~~~~$2\@\@\@\@$3\@\@\@\@/sig;
-foreach (@tags) {
-    $tag = $_;
-    $oldpage =~ s/<(\/*$tag)>/~~~~$1\@\@\@\@/sig;
-    $newpage =~ s/<(\/*$tag)>/~~~~$1\@\@\@\@/sig;
-    if ( $tag =~ s\/\*/ / ) { # XXX WTF is going here with the re?
-        $oldpage =~ s/<(\/*$tag.*?)>/~~~~$1\@\@\@\@/sig;
-        $newpage =~ s/<(\/*$tag.*?)>/~~~~$1\@\@\@\@/sig;
-    }
-}
+$oldpage = &MangleHTML($oldpage, @tags);
+$newpage = &MangleHTML($newpage, @tags);
 
 # Parse old and new page
 &TokenizePage($oldpage);
@@ -397,6 +383,24 @@ sub TokenContainsHlinkEnd() {
     $token =~ s/\s{2,}/ /sig;
     return 1 if $token =~ m/~~~~\/A\@\@\@\@/i;
     return 0;
+}
+
+sub MangleHTML() {
+    my $page = shift(@_);
+    my @tags = shift(@_);
+
+    $page =~ s/[\r\n]|\s\s/ /sig;    # Handle MSDOS-style line separators
+    $page =~ s/&nbsp;/\@\@\@\@&nbsp;~~~~/sig;   # Handle non-breaking white space
+    $page =~ s/<A(\s+[^>]*)<([^>]*)>([^>])*>/~~~~A$1~~~~$2\@\@\@\@$3\@\@\@\@/sig;    # Handle nested brackets
+    foreach (@tags) {
+        $tag = $_;
+        $page =~ s/<(\/*$tag)>/~~~~$1\@\@\@\@/sig;
+        if ( $tag =~ s/\*/ / ) { # XXX WTF is going here with the re?
+            $page =~ s/<(\/*$tag.*?)>/~~~~$1\@\@\@\@/sig;
+        }
+    }
+
+    return $page;
 }
 
 __END__
