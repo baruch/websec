@@ -42,7 +42,7 @@ $base= $ENV{HOME} . "/.websec/";
 $result = GetOptions("base=s"	=> \$base);
 
 # Remove trailing slash from base, we will add it ourself everywhere needed
-$base = s/\/$//;
+$base =~ s/\/$//;
 
 # Get today's date in the format we want.
 $today = strftime "%d %B %Y (%a)", localtime;
