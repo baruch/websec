@@ -2,7 +2,7 @@
 
 #################################################################################
 # 
-# Web Secretary Ver 1.7.0
+# Web Secretary Ver 1.8.0
 #
 # Retrieves a list of web pages and send the pages via email to
 # a designated recipient. It can optionally compare the page with a
@@ -39,7 +39,7 @@ use Pod::Usage;
 use File::Temp qw/tempfile/;
 
 # Print introduction
-print "Web Secretary Ver 1.7.0\n";
+print "Web Secretary Ver 1.8.0\n";
 print "By Chew Wei Yih Copyleft (c) 1998\n\n";
 
 # Initialize parameters
