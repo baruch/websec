@@ -177,20 +177,20 @@ close(OLDPAGE);
 close(CURPAGE);
 
 # Mangle some HTML tags to a form suitable for analysis
-$oldpage =~ s:[\r\n]|\s\s: :sig;    # Handle MSDOS-style line separators
-$newpage =~ s:[\r\n]|\s\s: :sig;
-$oldpage =~ s:&nbsp;:\@\@\@\@&nbsp;~~~~:sig;   # Handle non-breaking white space
-$newpage =~ s:&nbsp;:\@\@\@\@&nbsp;~~~~:sig;
-$oldpage =~ s:<A(\s+[^>]*)<([^>]*)>([^>])*>:~~~~A$1~~~~$2\@\@\@\@$3\@\@\@\@:sig
+$oldpage =~ s/[\r\n]|\s\s/ /sig;    # Handle MSDOS-style line separators
+$newpage =~ s/[\r\n]|\s\s/ /sig;
+$oldpage =~ s/&nbsp;/\@\@\@\@&nbsp;~~~~/sig;   # Handle non-breaking white space
+$newpage =~ s/&nbsp;/\@\@\@\@&nbsp;~~~~/sig;
+$oldpage =~ s/<A(\s+[^>]*)<([^>]*)>([^>])*>/~~~~A$1~~~~$2\@\@\@\@$3\@\@\@\@/sig
   ;    # Handle nested brackets
-$newpage =~ s:<A(\s+[^>]*)<([^>]*)>([^>])*>:~~~~A$1~~~~$2\@\@\@\@$3\@\@\@\@:sig;
+$newpage =~ s/<A(\s+[^>]*)<([^>]*)>([^>])*>/~~~~A$1~~~~$2\@\@\@\@$3\@\@\@\@/sig;
 foreach (@tags) {
     $tag = $_;
-    $oldpage =~ s:<(/*$tag)>:~~~~$1\@\@\@\@:sig;
-    $newpage =~ s:<(/*$tag)>:~~~~$1\@\@\@\@:sig;
-    if ( $tag =~ s/\*/ / ) {
-        $oldpage =~ s:<(/*$tag.*?)>:~~~~$1\@\@\@\@:sig;
-        $newpage =~ s:<(/*$tag.*?)>:~~~~$1\@\@\@\@:sig;
+    $oldpage =~ s/<(\/*$tag)>/~~~~$1\@\@\@\@/sig;
+    $newpage =~ s/<(\/*$tag)>/~~~~$1\@\@\@\@/sig;
+    if ( $tag =~ s\/\*/ / ) { # XXX WTF is going here with the re?
+        $oldpage =~ s/<(\/*$tag.*?)>/~~~~$1\@\@\@\@/sig;
+        $newpage =~ s/<(\/*$tag.*?)>/~~~~$1\@\@\@\@/sig;
     }
 }
 
@@ -313,9 +313,9 @@ sub TokenIsMangledHTMLTag() {
     my $token = shift (@_);
 
     while ( $token ne "" ) {
-        if ( $token =~ m|^\s*(.*?)\s*~~~~.*?\@\@\@\@\s*(.*?)\s*$|i ) {
+        if ( $token =~ m/^\s*(.*?)\s*~~~~.*?\@\@\@\@\s*(.*?)\s*$/i ) {
             $token = $2;
-            if ( !$1 =~ m|^\s*$| ) { return 0; }
+            if ( !$1 =~ m/^\s*$/ ) { return 0; }
         }
         else { return 0; }
     }
@@ -329,21 +329,21 @@ sub TokenContainsIgnoreKeyword() {
     $tokdup = $token;
 
     # If this token contains >= tmax no. of words, do not ignore
-    $tokdup =~ s:\@\@\@\@&nbsp;~~~~: :sig;
-    $tokdup =~ s:~~~~:<:sig;
-    $tokdup =~ s:\@\@\@\@:>:sig;
-    $tokdup =~ s:<A(\s+[^>]*)<([^>]*)>([^>])*>::sig;
-    $tokdup =~ s:<[^>]*>::sig;
-    $tokdup =~ s:^\s*::sig;
-    $tokdup =~ s:\s*$::sig;
-    $tokdup =~ s:\s+: :sig;
+    $tokdup =~ s/\@\@\@\@&nbsp;~~~~/ /sig;
+    $tokdup =~ s/~~~~/</sig;
+    $tokdup =~ s/\@\@\@\@/>/sig;
+    $tokdup =~ s/<A(\s+[^>]*)<([^>]*)>([^>])*>//sig;
+    $tokdup =~ s/<[^>]*>//sig;
+    $tokdup =~ s/^\s*//sig;
+    $tokdup =~ s/\s*$//sig;
+    $tokdup =~ s/\s+/ /sig;
     @words = split /\s/, $tokdup;
     if ($debug) { print "#### C" . ( $#words + 1 ) . ": $tokdup\n"; }
     if ( $#words + 1 > $tmax ) { return 0; }
 
     foreach $keyword (@ignore) {
-        if ( $token =~ m:^.*?(\b$keyword\b).*?$:i
-            || $tokdup =~ m:^.*?(\b$keyword\b).*?$:i )
+        if ( $token =~ m/^.*?(\b$keyword\b).*?$/i
+            || $tokdup =~ m/^.*?(\b$keyword\b).*?$/i )
         {
             $lastIgnoreKeyword = $keyword;
             return 1;
@@ -359,14 +359,14 @@ sub TokenExists() {
     $tokdup = $token;
 
     # If this token contains <= tmin no. of words, don't check
-    $tokdup =~ s:\@\@\@\@&nbsp;~~~~: :sig;
-    $tokdup =~ s:~~~~:<:sig;
-    $tokdup =~ s:\@\@\@\@:>:sig;
-    $tokdup =~ s:<A(\s+[^>]*)<([^>]*)>([^>])*>::sig;
-    $tokdup =~ s:<[^>]*>::sig;
-    $tokdup =~ s:^\s*::sig;
-    $tokdup =~ s:\s*$::sig;
-    $tokdup =~ s:\s+: :sig;
+    $tokdup =~ s/\@\@\@\@&nbsp;~~~~/ /sig;
+    $tokdup =~ s/~~~~/</sig;
+    $tokdup =~ s/\@\@\@\@/>/sig;
+    $tokdup =~ s/<A(\s+[^>]*)<([^>]*)>([^>])*>//sig;
+    $tokdup =~ s/<[^>]*>//sig;
+    $tokdup =~ s/^\s*//sig;
+    $tokdup =~ s/\s*$//sig;
+    $tokdup =~ s/\s+/ /sig;
     @words = split /\s/, $tokdup;
     if ( $#words + 1 <= $tmin ) { return 1; }
 
@@ -383,7 +383,7 @@ sub TokenContainsIgnoreURL() {
     $token =~ s/\s{2,}/ /sig;
 
     foreach $url (@ignoreurl) {
-        if ( $token =~ m:~~~~A.*?HREF=.*?$url.*?\@\@\@\@:i ) {
+        if ( $token =~ m/~~~~A.*?HREF=.*?$url.*?\@\@\@\@/i ) {
             $lastIgnoreURL = $url;
             return 1;
         }
@@ -395,7 +395,7 @@ sub TokenContainsIgnoreURL() {
 sub TokenContainsHlinkEnd() {
     my $token = shift (@_);
     $token =~ s/\s{2,}/ /sig;
-    return 1 if $token =~ m:~~~~/A\@\@\@\@:i;
+    return 1 if $token =~ m/~~~~\/A\@\@\@\@/i;
     return 0;
 }
 

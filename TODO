@@ -3,8 +3,9 @@ Next Release
 
 http://groups.yahoo.com/group/websec/message/79 has an elisp mode to highlight
 url.list.
-  - need an equivalent from vim.
-  - Find out where to install the emacs mode
+  + need an equivalent from vim.
+  + Find out where to install the emacs mode
+  ? Fix it, it seems broken, need user input on this.
 
 Adam Stanley provided patches to add:
  + 'MailFrom', the address from which the mail will come from.
