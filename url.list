@@ -122,3 +122,7 @@ Name = Web Secretary
 Prefix = websec-homepage
 DateFMT = " - %Y-%m-%d"
 
+URL = http://www.vim.org/
+Name = VIM
+Prefix = vim
+Ignore = General,Date_Time,VIM
