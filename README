@@ -27,7 +27,7 @@ my own leisure.
 
 Web Secretary should be able to run on all Unix systems with a Perl
 interpreter (and LWP module) installed. At present, it has only been tested
-on Linux. Users report that it works on Windows too.
+on Linux. Users report that it works on Windows too using ActiveState Perl.
 
 
 3. INSTALLATION AND CONFIGURATION
