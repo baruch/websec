@@ -25,50 +25,70 @@
 #
 #################################################################################
 
+use Getopt::Long;
+
 # Print help if no arguments passed
 if ($#ARGV <= 0)
 {
     print "Webdiff Ver 1.4.0\n";
     print "By Chew Wei Yih Copyleft (c) 1998\n\n";
     print "Options:\n";
-    print "  -archive   <pathname>  Archive HTML file\n";
-    print "  -current   <pathname>  Current HTML file\n";
-    print "  -out       <pathname>  Output HTML file (with highlighting)\n";
-    print "  -hicolor   <color>     Highlight color (Def: blue, yellow, pink, grey or #rrggbb)\n";
-    print "  -ignore    <filelist>  Comma-delimited list of named sections containing ignore keywords\n";
-    print "  -ignoreurl <filelist>  Comma-delimited list of named sections containing ignore urls\n";
-    print "  -tmin      <number>    Don't check if token contains <= given no. of words\n";
-    print "  -tmax      <number>    Don't ignore if token contains >= given no. of words\n";
-    print "  -debug     <boolean>   Set to 'true' to output debug messages\n\n";
+    print "  --archive=<pathname>	Archive HTML file\n";
+    print "  --current=<pathname>	Current HTML file\n";
+    print "  --out=<pathname>		Output HTML file (with highlighting)\n";
+    print "  --basedir=<pathname>	Base directory for files\n";
+    print "  --hicolor=<color>		Highlight color (Def: blue, yellow, pink, grey or #rrggbb)\n";
+    print "  --ignore=<filelist>	Comma-delimited list of named sections containing ignore keywords\n";
+    print "  --ignoreurl=<filelist>	Comma-delimited list of named sections containing ignore urls\n";
+    print "  --tmin=<number>		Don't check if token contains <= given no. of words\n";
+    print "  --tmax=<number>		Don't ignore if token contains >= given no. of words\n";
+    print "  --debug                Debug messages\n\n";
     exit -1;
 }
 
-# Parse arguments to get option values
-%optionList =
-(
-    -hicolor    => "blue",
-    -ignore     => "none",
-    -ignoreurl  => "none",
-    -tmin       => 0,
-    -tmax       => 99999,
-    -debug      => "false",
-);
-&ParseArguments(@ARGV);
-
-# Store option values in easy-to-access variables
-$oldpage    = $optionList{-archive};
-$curpage    = $optionList{-current};
-$outpage    = $optionList{-out};
-$hicolor    = $optionList{-hicolor};
-$ignore     = $optionList{-ignore};
-$ignoreurl  = $optionList{-ignoreurl};
-$tmin       = $optionList{-tmin};
-$tmax       = $optionList{-tmax};
-$debug      = $optionList{-debug};
+# Initialize parameters
+$oldpage    = "";
+$curpage    = "";
+$outpage    = "";
+$hicolor    = "blue";
+$ignore     = "none";
+$ignoreurl  = "none";
+$tmin       = 0;
+$tmax       = 99999;
+$debug      = 0;
 $ignoreFile = "ignore.list";
+$basedir	= $ENV{HOME} . "/.websec/";
 
-# Get base directory
-$basedir = $ENV{HOME} . "/.websec/";
+# Parse options
+GetOptions(
+		"basedir=s"		=> \$basedir,
+		"archive=s"		=> \$oldpage,
+		"current=s"		=> \$curpage,
+		"out=s"			=> \$outpage,
+		"hicolor=s"		=> \$hicolor,
+		"ignore=s" 		=> \$ignore,
+		"ignoreurl=s"	=> \$ignoreurl,
+		"tmin=i"		=> \$tmin,
+		"tmax=i"		=> \$tmax,
+		"debug"			=> \$debug,
+		"ignorefile=s"	=> \$ignoreFile);
+
+# Make sure some essential option values are supplied
+if ($oldpage eq "")
+{
+	print "You did not supply the archive HTML file via the --archive option.\n";
+	exit -1;
+}
+if ($curpage eq "")
+{
+	print "You did not supply the current HTML file via the --current option.\n";
+	exit -1;
+}
+if ($outpage eq "")
+{
+	print "You did not supply the output HTML file via the --out option.\n";
+	exit -1;
+}
 
 # Choose highlighting color
 %colorList = ( yellow => "#ffff99", blue => "#66ccff", pink => "#ffcccc", grey => "#4c4c4c" );
@@ -96,7 +116,7 @@ if ($ignore ne "none")
     }
     @ignore = split/[\r\n]/, $ignorelist;
 }
-if ($debug eq "true") { foreach (@ignore) { print "Ignore: $_\n"; } }
+if ($debug) { foreach (@ignore) { print "Ignore: $_\n"; } }
 close(IGNORE);
 
 # Read ignore urls
@@ -116,7 +136,7 @@ if ($ignoreurl ne "none")
     }
     @ignoreurl = split/[\r\n]/, $ignorelist;
 }
-if ($debug eq "true") { foreach (@ignoreurl) { print "IgnoreURL: $_\n"; } }
+if ($debug) { foreach (@ignoreurl) { print "IgnoreURL: $_\n"; } }
 
 # Undefine line separator so that we can read entire file at one go from now on
 undef $/;
@@ -154,7 +174,7 @@ foreach (@tags)
 
 # Parse old and new page
 &TokenizePage($oldpage); @oldtokens = @tokens; $#tokens = -1;
-if ($debug eq "true") { foreach (@oldtokens) { print ">>>> $_\n"; } }
+if ($debug) { foreach (@oldtokens) { print ">>>> $_\n"; } }
 &TokenizePage($newpage); @newtokens = @tokens; $#tokens = -1;
 
 # Parse new page
@@ -163,8 +183,8 @@ if ($debug eq "true") { foreach (@oldtokens) { print ">>>> $_\n"; } }
 # Restore tags which we have previously mangled
 foreach $token (@newtokens)
 {
-    $token =~ s:\@\@\@\@&nbsp;~~~~:&nbsp;:sig;
-    foreach $tag (@tags) { $token =~ s:~~~~(/*.*?)\@\@\@\@:<$1>:sig; }
+    $token =~ s/\@\@\@\@&nbsp;~~~~/&nbsp;/sig;
+    foreach $tag (@tags) { $token =~ s/~~~~(\/*.*?)\@\@\@\@/<$1>/sig; }
 }
 
 # Open output file for writing
@@ -175,49 +195,9 @@ close(OUTPAGE);
 # End of program
 if (!$changeStatus)
 {
-    if ($debug eq "true") { print "No changes were detected.\n"; }
+    if ($debug) { print "No changes were detected.\n"; }
 }
 exit $changeStatus;
-
-# Parse arguments
-sub ParseArguments()
-{
-    while(1)
-    {
-        if (!defined($option = shift)) { last; }
-        if ($option ne "-archive" && $option ne "-current" && $option ne "-out" &&
-            $option ne "-hicolor" && $option ne "-ignore" && $option ne "-debug" &&
-            $option ne "-tmin" && $option ne "-tmax" && $option ne "-ignoreurl")
-        {
-            print "Unrecognized option: $option.\n";
-            exit -1;
-        }
-
-        if (!defined($value = shift))
-        {
-            print "No value supplied for option: $option.\n";
-            exit -1;
-        }
-        $optionList{$option} = $value;
-    }
-
-    # Make sure some essential option values are supplied
-    if ($optionList{-archive} eq "")
-    {
-        print "You did not supply the archive HTML file via the -archive option.\n";
-        exit -1;
-    }
-    if ($optionList{-current} eq "")
-    {
-        print "You did not supply the current HTML file via the -current option.\n";
-        exit -1;
-    }
-    if ($optionList{-out} eq "")
-    {
-        print "You did not supply the output HTML file via the -out option.\n";
-        exit -1;
-    }
-}
 
 # Convert page to tokens
 sub TokenizePage()
@@ -240,7 +220,7 @@ sub PerformDiff()
     foreach $token (@newtokens)
     {
         if ($token eq "") { next; }
-        if ($debug eq "true") { print "<<<< $token\n"; }
+        if ($debug) { print "<<<< $token\n"; }
 
         if ($token =~ m|^.*?<!-.*?$|) { $commentOn = 1; }
         if ($token =~ m|^.*?->.*?|) { $commentOn = 0; next; }
@@ -259,43 +239,43 @@ sub PerformDiff()
 
         if ($commentOn)
         {
-            if ($debug eq "true") { print "#### Token is within comment block.\n"; }
+            if ($debug) { print "#### Token is within comment block.\n"; }
         }
         elsif ($titleOn)
         {
-            if ($debug eq "true") { print "#### Token is within title block.\n"; }
+            if ($debug) { print "#### Token is within title block.\n"; }
         }
         elsif ($scriptOn)
         {
-            if ($debug eq "true") { print "#### Token is within Javascript block.\n"; }
+            if ($debug) { print "#### Token is within Javascript block.\n"; }
         }
         elsif ($styleOn)
         {
-            if ($debug eq "true") { print "#### Token is within stylesheet block.\n"; }
+            if ($debug) { print "#### Token is within stylesheet block.\n"; }
         }
         elsif ($ignoreUrlOn)
         {
-            if ($debug eq "true") { print "#### Token contains ignore URL - $lastIgnoreURL\n"; }
+            if ($debug) { print "#### Token contains ignore URL - $lastIgnoreURL\n"; }
         }
         elsif ($token =~ m/<.*?>/sig)
         {
-            if ($debug eq "true") { print "#### Token is a HTML tag.\n"; }
+            if ($debug) { print "#### Token is a HTML tag.\n"; }
         }
         elsif (TokenIsMangledHTMLTag($token))
         {
-            if ($debug eq "true") { print "#### Token is a mangled HTML tag.\n"; }
+            if ($debug) { print "#### Token is a mangled HTML tag.\n"; }
         }
         elsif (TokenContainsIgnoreKeyword($token))
         {
-            if ($debug eq "true") { print "#### Token contains ignore keyword - $lastIgnoreKeyword\n"; }
+            if ($debug) { print "#### Token contains ignore keyword - $lastIgnoreKeyword\n"; }
         }
         elsif (TokenExists($token))
         {
-            if ($debug eq "true") { print "#### Token exists in old page.\n"; }
+            if ($debug) { print "#### Token exists in old page.\n"; }
         }
         else
         {
-            if ($debug eq "true" ) { print "#### Token has been highlighted!\n"; }
+            if ($debug ) { print "#### Token has been highlighted!\n"; }
             $token = "<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=0><TR><TD BGCOLOR=$hicolor>" .
                 $token . "</TD></TR></TABLE>";
             $changeStatus = 1;
@@ -336,8 +316,8 @@ sub TokenContainsIgnoreKeyword()
     $tokdup =~ s:^\s*::sig;
     $tokdup =~ s:\s*$::sig;
     $tokdup =~ s:\s+: :sig;
-    @words = split/\s/, $tokdup;
-    if ($debug eq "true") { print "#### C".($#words+1).": $tokdup\n"; }
+    @words = split /\s/, $tokdup;
+    if ($debug) { print "#### C".($#words+1).": $tokdup\n"; }
     if ($#words+1 > $tmax) { return 0; }
 
     foreach $keyword (@ignore)

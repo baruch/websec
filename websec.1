@@ -4,20 +4,17 @@
 websec \- web secretary
 
 .SH "SYNOPSIS"
-\fBwebsec\fR <$HOME/.websec/url.list>
+\fBwebsec\fR 
 
 .SH "DESCRIPTION"
 \fBWebsec\fR is a web page monitoring software. 
 It will send you a changed web page with the contents
-highlighted. The debian version of websec has been
-changed, so the web\-pages archive will be stored in
-\fI$HOME/.websec\fR, this is also the directory where
-you should keep your url.list.
-
+highlighted.
 
 When called without an argument, \fBwebsec\fR will try to
-open \fI$HOME/.websec/url.list\fR, but you can also 
-provide a filename as the first argument.
+open \fI$HOME/.websec/url.list\fR, but you can provide the
+--base argument to provide a different directory to read the
+config file from and keep the data in.
 
 
 You can add a line like \fIAddSubject = [websec]\fR to

@@ -29,16 +29,22 @@
 
 use LWP::UserAgent;
 use POSIX qw(strftime);
+use Getopt::Long;
 
 # Print introduction
 print "Web Secretary Ver 1.4.0\n";
 print "By Chew Wei Yih Copyleft (c) 1998\n\n";
 
+# Initialize parameters
+$base= $ENV{HOME} . "/.websec/";
+
+# Parse command line options
+$result = GetOptions("base=s"	=> \$base);
+
 # Get today's date in the format we want.
 $today = strftime "%d %B %Y (%a)", localtime;
 
 # Prepare pathnames.
-$base= $ENV{HOME} . "/.websec/";
 $archive = "archive/";
 mkdir $base,0750 if !-d $base;
 mkdir $base . $archive,0750 if !-d $base . $archive;
@@ -126,7 +132,7 @@ sub HandleInput()
     # Get keyword, value pair
     ($keyword, $value) = split(/=/, $_, 2);
     $keyword   =~ s/^\s*(.*?)\s*$/$1/;
-    $value     =~ s/^\s*\"*(.*?)\"*\s*$/$1/;
+    $value     =~ s/^\s*\"?(.*?)\"?\s*$/$1/;
 
     # Check if valid keyword
     if ($keyword ne "URL" && $keyword ne "Auth" && $keyword ne "Name"
@@ -142,6 +148,12 @@ sub HandleInput()
         print qq(Unrecognized keyword in line $.: "$_".\n);
         return -1;
     }
+
+	# Allow values from the environment
+	if ($value =~ m/^\$/)
+	{
+		$value = $ENV{$value};
+	}
 
     $siteinfo{$keyword} = $value;
     return 0;
@@ -197,8 +209,8 @@ sub HandleSite()
     close(FILE);
     $subj = "$addsubject $name - $today";
     $webdiff =
-        "webdiff -archive $page_previous -current $page_current -out $outgoing " .
-        "-hicolor $hicolor -ignore $ignore -ignoreurl $ignoreurl -tmin $tmin -tmax $tmax";
+        "webdiff --basedir=$base --archive=$page_previous --current=$page_current --out=$outgoing " .
+        "--hicolor =$hicolor --ignore=$ignore --ignoreurl=$ignoreurl --tmin=$tmin --tmax=$tmax";
 
     # Download URL using LWP
     $ua = new LWP::UserAgent;
