@@ -43,26 +43,28 @@ print "By Chew Wei Yih Copyleft (c) 1998\n\n";
 
 # Initialize parameters
 
-$urllist = "url.list";
-GetOptions("urllist=s" => \$urllist);
-
-if ( -e $urllist ) {
-    $base = ".";
-}
-else {
-    $base = $ENV{HOME} . "/.websec";
-}
 $help = 0;
 $man  = 0;
+$urllist = "url.list";
 
 # Parse command line options
 GetOptions(
+    "urllist=s" => \$urllist,
     "help|?" => \$help,
     "man"    => \$man,
     "base=s" => \$base
 );
-pod2usage(1) if ($help);
+
+pod2usage(1) if $help;
 pod2usage( -exitstatus => 0, -verbose => 2 ) if $man;
+
+if ($base eq "") {
+    if ( -e $urllist ) {
+        $base = ".";
+    } else {
+        $base = $ENV{HOME} . "/.websec";
+    }
+}
 
 # Remove trailing slash from base, we will add it ourself everywhere needed
 $base =~ s/\/$//;
