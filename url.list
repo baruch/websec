@@ -12,6 +12,7 @@
 # Tmin       = every token containing <= Tmin words will not be highlighted for differences.
 # Tmax       = every token containing >= Tmax words will not be checked for ignore keywords.
 # Proxy      = specify proxy "http://your.proxy.here:portnum" if you are behind one.
+# MailFrom   = Address from which the mail will appear from.
 # Email      = email address to send page to.
 # EmailLink  = email address to send URL to.
 # Program    = application to call with the diff-file.
@@ -26,6 +27,7 @@ Tmin      = 0
 Tmax      = 99999
 Email     = ${USER}@example.com
 EmailLink = ${USER}@example.com
+#MailFrom = ${USER}@example.com
 
 # enable this to open the webdiff-output in a new Mozilla Tab or specify a 
 # different application to run with the changed page

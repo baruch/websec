@@ -115,6 +115,9 @@ The following parameters (case-sensitive) are recognized in each section:
     ProxyAuth  - Specify proxy authentication in "username:password" format.
                  The code for this feature was contributed by Volker Stampa.
 
+    MailFrom   - The E-Mail address to send mail from, this can be left empty
+                 and the user used to run websec will be used.
+
     Email      - Comma-delimited list of email addresses to send highlighted
                  pages to.
 
@@ -297,6 +300,11 @@ Thanks to Jeff for contributing this tip!
 
 
 10. HISTORY
+
+1.7 - Under construction
+
+    * Add MailFrom, to set the address from which the mail will appear to come.
+      (Thanks to Adam Stanley)
 
 1.6.0 - Released on 05 May 2003
 

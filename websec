@@ -101,7 +101,8 @@ local %defaults = (
     AddSubject => "",
     Digest     => "false",
     UserAgent  => "WebSec/1.6.0",
-	DateFMT    => " - %d %B %Y (%a)",
+    DateFMT    => " - %d %B %Y (%a)",
+    MailFrom   => "",
 );
 %siteinfo = %defaults;
 
@@ -142,8 +143,8 @@ if (@digest) {
     $linkmsg =
       "The contents of the following URLs have changed:\n\n"
       . join ( "\n", @digest ) . "\n";
-	$subj = "$addsubject$today";
-    &MailMessage( $linkmsg, $subj, $digestEmail );
+    $subj = "$addsubject$today";
+    &MailMessage( $linkmsg, $subj, $digestEmail, $siteinfo{MailFrom} );
 }
 
 # End of main program
@@ -281,20 +282,24 @@ sub HandleSite() {
                 $rc = system($webdiff);
                 if ( $rc != 0 ) {
                     if ( $email ne "" ) {
-						print "Sending highlighted page to $email ...\n";
-                        MailDocument( $outgoing, $subj, $email );
+                        print "Sending highlighted page to $email ...\n";
+                        MailDocument( $outgoing, $subj, $email,
+                            $siteinfo{MailFrom} );
                     }
                     if ( $emailLink ne "" ) {
-						print "Sending link to $emailLink ...\n";
+                        print "Sending link to $emailLink ...\n";
                         if ( ( $digest ne "no" ) && ( $digest ne "false" ) ) {
                             push @digest, $url;
                             ($digestEmail) or ( $digestEmail = $emailLink );
                         }
                         else {
-							my $filepath = File::Spec->rel2abs($page_previous);
+                            my $filepath = File::Spec->rel2abs($page_previous);
                             $linkmsg =
 "The contents of the following URL has changed:\n$url\n\nIt can also be found at:\nfile://$filepath\n";
-                            MailMessage( $linkmsg, $subj, $emailLink );
+                            MailMessage(
+                                $linkmsg,   $subj,
+                                $emailLink, $siteinfo{MailFrom}
+                            );
                         }
                     }
                     if ( $program ne "" ) {
@@ -315,7 +320,8 @@ sub HandleSite() {
         }
         else {
             if ( $email ne "" ) {
-                MailDocument( $page_current, $subj, $email );
+                MailDocument( $page_current, $subj, $email,
+                    $siteinfo{MailFrom} );
             }
             if ($page_previousExists) { rename $page_previous, $page_archive; }
             rename $page_current, $page_previous;
@@ -329,14 +335,16 @@ sub HandleSite() {
           "Unable to retrieve $name ($url).\n\n"
           . "Detailed error as follows:\n"
           . $resp->error_as_HTML;
-        if ( $email ne "" ) { MailMessage( $errmsg, $subj, $email ); }
+        if ( $email ne "" ) {
+            MailMessage( $errmsg, $subj, $email, $siteinfo{MailFrom} );
+        }
         if ( $emailLink ne "" ) {
             if ( ( $digest ne "no" ) && ( $digest ne "false" ) ) {
                 push @digest, "Unable to retrieve: $url";
                 ($digestEmail) or ( $digestEmail = $emailLink );
             }
             else {
-                MailMessage( $errmsg, $subj, $emailLink );
+                MailMessage( $errmsg, $subj, $emailLink, $siteinfo{MailFrom} );
             }
         }
     }
@@ -351,9 +359,14 @@ sub MailMessage() {
     my $message    = shift (@_);
     my $subject    = shift (@_);
     my @recipients = split /,/, shift (@_);
+    my $from       = shift (@_);
 
     foreach $email (@recipients) {
         $req = HTTP::Request->new( POST => "mailto:" . $email );
+        if ( $from ne "" ) {
+            $req->header( "From",   $from );
+            $req->header( "Sender", $from );
+        }
         $req->header( "Subject",      $subject );
         $req->header( "Content-type", "text/plain; charset=us-ascii" );
         $req->header( "Content-Transfer-Encoding", "7bit" );
@@ -372,6 +385,7 @@ sub MailDocument() {
     my $filename   = shift (@_);
     my $subject    = shift (@_);
     my @recipients = split /,/, shift (@_);
+    my $from       = shift (@_);
     my $tmpstr     = $/;
 
     undef $/;
@@ -381,6 +395,10 @@ sub MailDocument() {
 
     foreach $email (@recipients) {
         $req = HTTP::Request->new( POST => "mailto:" . $email );
+        if ( $from ne "" ) {
+            $req->header( "From",   $from );
+            $req->header( "Sender", $from );
+        }
         $req->header( "Subject",                   $subject );
         $req->header( "Content-type",              "text/html" );
         $req->header( "Content-Transfer-Encoding", "7bit" );
