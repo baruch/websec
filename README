@@ -130,12 +130,16 @@ The following parameters (case-sensitive) are recognized in each section:
                  them in one email.
 
     UserAgent  - The User-Agent that will be sent by the web client. This can
-	             be used to bypass servers that prevent access based on the user
-				 agent.
-	
-	DateFMT    - Date format to use in e-mail messages, can be empty for no date.
-	             Set it to " - %Y-%m-%d" for ISO dates. This is perl format for dates.
-	
+                 be used to bypass servers that prevent access based on the user
+                 agent.
+
+    DateFMT    - Date format to use in e-mail messages, can be empty for no date.
+                 Set it to " - %Y-%m-%d" for ISO dates. This is perl format for dates.
+
+    RandomWait - Websec waits for a random number of seconds between retries up
+                 to the value specified by the RandomWait keyword. This is to
+                 prevent websec from being blocked by websites that perform log
+                 analysis to find time similarities between requests.
 
 Any line which begins with a '#' is treated as comment and ignored.
 
