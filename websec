@@ -29,6 +29,8 @@
 
 my $feature_compress = 1;
 
+use HTTP::Status;
+use HTTP::Date;
 use LWP::UserAgent;
 use URI;
 eval { require Compress::Zlib; } or $feature_compress=0;
@@ -279,6 +281,8 @@ sub HandleSite() {
     $outgoing     = "$pagebase.diff.html";
     $page_previousExists = 1;
     open( FILE, $page_previous ) or $page_previousExists = 0;
+    # get modification time
+    if ($page_previousExists) { $mtime = (stat(FILE))[9]; } 
     close(FILE);
     $subj    = "$addsubject $name$today - $url";
     $webdiff =
@@ -298,11 +302,19 @@ sub HandleSite() {
     if ( $proxy ne "" ) { $ua->proxy( http => $proxy ); }
     $req = PrepareRequest($url);
 
+    # set If-Modified-Since to the modification time of the archive file
+    if ($page_previousExists) { $req->header('If-Modified-Since' => time2str($mtime)); }
+
     # Try up to '$retry' times to download URL
     $counter = 0;
     srand;
     while ( $counter < $retry ) {
         $resp = $ua->request($req);
+
+        if ($resp->code == 304) { 
+            print "Document not changed.\n";
+            return 0;
+        }
 
         if ( ! $resp->is_success ) {
             $counter++;
@@ -352,6 +364,15 @@ sub HandleSite() {
         print HTML_FILE "<BASE HREF= \"", $resp->base . "\">\n";
         print HTML_FILE $resp->content;
         close HTML_FILE;
+
+        # set the modification date for later retrieval
+        $mtime = $resp->header("Last-Modified");
+        if ($mtime) {
+            $mtime = str2time($mtime);
+            if ($mtime) { # Make sure the time was in a legal format
+                    utime($mtime, $mtime, $page_current);
+            }
+        }
 
         if ( $diff eq "webdiff" ) {
             if ( $page_previousExists == 1 ) {
