@@ -41,15 +41,18 @@ $base= $ENV{HOME} . "/.websec/";
 # Parse command line options
 $result = GetOptions("base=s"	=> \$base);
 
+# Remove trailing slash from base, we will add it ourself everywhere needed
+$base = s/\/$//;
+
 # Get today's date in the format we want.
 $today = strftime "%d %B %Y (%a)", localtime;
 
 # Prepare pathnames.
-$archive = "/archive/";
+$archive = "$base/archive";
 mkdir $base,0750 if !-d $base;
-mkdir $base . $archive,0750 if !-d $base . $archive;
-$outgoing = $base . "/index.html";
-$page_current = $base . "/retrieve.html";
+mkdir $archive,0750 if !-d $archive;
+$outgoing = "$base/index.html";
+$page_current = "$base/retrieve.html";
 
 # prepare digest
 @digest = ();
@@ -202,8 +205,9 @@ sub HandleSite()
 
     # Prepare for downloading this page
     print "Processing => $url ($name) ...\n";
-    $page_previous = $base . $archive . $prefix . ".html";
-    $page_archive = $base . $archive . $prefix . ".old.html";
+    $pagebase = "$archive/$prefix";
+    $page_previous = "$pagebase.html";
+    $page_archive = "$pagebase.old.html";
     $page_previousExists = 1;
     open(FILE, $page_previous) or $page_previousExists = 0;
     close(FILE);
