@@ -19,10 +19,11 @@ elseif exists("b:current_syntax")
 endif
 
 syn case ignore
-syn keyword urllistCommand  Auth Diff Hicolor Ignore IgnoreURL Tmin Tmax ProxyAuth
-syn keyword urllistCommand  Email EmailLink EmailError Program MailFrom Proxy con
-syn keyword urllistCommand  Program URL Name Prefix AsciiMarker Digest
-syn keyword urllistCommand  UserAgent DateFMT RandomWait
+syn keyword urllistCommand  AsciiMarker Auth DateFMT Diff Digest
+syn keyword urllistCommand  Email EmailError EmailLink Hicolor Ignore IgnoreURL
+syn keyword urllistCommand  MailFrom Name Prefix Program 
+syn keyword urllistCommand  Proxy ProxyAuth RandomWait Tmax Tmin
+syn keyword urllistCommand  URL UserAgent
 
 syn region	urllistString	start=+"+ skip=+\\\\\|\\"+ end=+"+ oneline
 syn region	urllistString	start=+'+ skip=+\\\\\|\\'+ end=+'+ oneline

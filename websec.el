@@ -32,8 +32,9 @@
      (2 font-lock-variable-name-face))))
 
 (defvar url-list-keywords
-  '( "URL" "Auth" "Name" "Prefix" "Diff" "Hicolor" "Ignore" "IgnoreURL"
-     "Tmin" "Tmax" "Proxy" "ProxyAuth" "Email" "EmailLink" "Digest" ))
+  '( "AsciiMarker" "Auth" "DateFMT" "Diff" "Digest" "Email" "EmailError"
+     "EmailLink" "Hicolor" "Ignore" "IgnoreURL" "MailFrom" "Name" "Prefix"
+     "Program" "Proxy" "ProxyAuth" "RandomWait" "Tmax" "Tmin" "URL" "UserAgent" ))
 
 (define-generic-mode 'url-list-mode
   ;; comment-list
