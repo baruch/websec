@@ -91,6 +91,7 @@ local %defaults = (
     IgnoreURL  => "none",
     Email      => "",
     EmailLink  => "",
+    Program    => "",
     Proxy      => "",
     ProxyAuth  => "none",
     Randomwait => 0,
@@ -189,6 +190,7 @@ sub HandleSite() {
     $ignoreurl  = $siteinfo{IgnoreURL};
     $email      = $siteinfo{Email};
     $emailLink  = $siteinfo{EmailLink};
+    $program    = $siteinfo{Program};
     $proxy      = $siteinfo{Proxy};
     $proxyAuth  = $siteinfo{ProxyAuth};
     $randomwait = $siteinfo{Randomwait};
@@ -208,9 +210,11 @@ sub HandleSite() {
     }
 
     # If essential parameters are not present, abort with error
-    if ( $name eq "" || $prefix eq "" || ( $email eq "" && $emailLink eq "" ) )
+    if ( $name eq ""
+        || $prefix eq ""
+        || ( $email eq "" && $emailLink eq "" && $program eq "" ) )
     {
-        print "Name, prefix or email info missing from URL: $url.\n";
+        print "Name, prefix, program or email info missing from URL: $url.\n";
         return -1;
     }
 
@@ -286,6 +290,9 @@ sub HandleSite() {
 "The contents of the following URL has changed:\n\n$url\n";
                             MailMessage( $linkmsg, $subj, $emailLink );
                         }
+                    }
+                    if ( $program ne "" ) {
+                        ShowDocument( $program, $outgoing );
                     }
                 }
                 else {
@@ -381,6 +388,43 @@ sub MailDocument() {
     $/ = $tmpstr;
 }
 
+sub ShowDocument() {
+    my ( $program, $outgoing ) = @_;
+    my $status;
+
+    # special handling for mozilla, try to use remoting...
+    if ( $program eq "mozilla" ) {
+        $status = system("mozilla -remote \"ping()\"");
+
+        # print "Status after ping: ".$status."\n";
+
+# if ping() returns ne 0, mozilla is not running, we cannot use openurl()
+        if ( $status ne 0 ) {
+            $status = system( "mozilla", $outgoing );
+            if ( $status ne 0 ) {
+                print "Running mozilla returned status: " . $status . "\n";
+            }
+        }
+        else {
+            $status =
+              system(
+                "mozilla -remote \"openurl(" . $outgoing . ",new-tab)\"" );
+            if ( $status ne 0 ) {
+                print "Running mozilla returned status: " . $status . "\n";
+            }
+        }
+    }
+    else {
+
+        # other applications are currently just started
+        $status = system( $program, $outgoing );
+        if ( $status ne 0 ) {
+            print "Application " . $program
+              . " returned status: " . $status . "\n";
+        }
+    }
+}
+
 __END__
 
 =head1 NAME
@@ -448,4 +492,5 @@ Baruch Even is continuing the maintenance and
 Joop Stakenborg <pa3aba@debian.org> provided this man page, 
 
 =cut
+
 

@@ -14,6 +14,7 @@
 # Proxy      = specify proxy "http://your.proxy.here:portnum" if you are behind one.
 # Email      = email address to send page to.
 # EmailLink  = email address to send URL to.
+# Program    = application to call with the diff-file.
 #############################################################################################
 
 Auth      = none
@@ -25,6 +26,10 @@ Tmin      = 0
 Tmax      = 99999
 Email     = ${USER}@example.com
 EmailLink = ${USER}@example.com
+
+# enable this to open the webdiff-output in a new Mozilla Tab or specify a 
+# different application to run with the changed page
+#Program   = mozilla
 
 ##########################################################################################
 # Sites to monitor
@@ -109,3 +114,8 @@ Hicolor = grey
 URL = http://www.wired.com/news/
 Name = Wired News
 Prefix = wired-news
+
+URL = http://www.nongnu.org/websec/
+Name = Web Secretary
+Prefix = websec-homepage
+

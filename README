@@ -121,6 +121,10 @@ The following parameters (case-sensitive) are recognized in each section:
     EmailLink  - Comma-delimited list of email addresses to send URL of
                  changed pages to.
 
+    Program    - Application to run with the diff-output-file. If "mozilla" is 
+                 specified here, the diffs are opened in new tabs of the Mozilla
+                 Browser.
+
     Digest     - true|false or yes|no. This works only if EmailLink is
                  specified. It consolidates all the changed URLs and sends
                  them in one email.
