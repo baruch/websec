@@ -46,6 +46,7 @@ print "By Chew Wei Yih Copyleft (c) 1998\n\n";
 $help = 0;
 $man  = 0;
 $urllist = "url.list";
+$base = "";
 
 # Parse command line options
 GetOptions(
