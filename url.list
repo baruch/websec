@@ -61,10 +61,6 @@ URL = http://www.linuxgazette.com/
 Name = Linux Gazette
 Prefix = linux-gazette
 
-URL = http://www.mp3.com/
-Name = MP3.COM
-Prefix = mp3-com
-
 URL = http://www.pcmag.com/
 Name = PC Magazine
 Prefix = pcmag
