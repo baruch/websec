@@ -362,7 +362,11 @@ sub HandleSite() {
     
         open( HTML_FILE, ">$page_current" );
         print HTML_FILE "<!-- X-URL: ", $resp->base, " -->\n";
-        print HTML_FILE "<BASE HREF= \"", $resp->base . "\">\n";
+        print HTML_FILE "<BASE HREF= \"", $resp->base, "\">\n";
+        my ($type, $charset) = $resp->content_type;
+        if ($charset) {
+            print HTML_FILE "<meta http-equiv=\"Content-Type\" content=\"", $type, "; ", $charset ,"\"/>\n";
+        }
         print HTML_FILE $resp->content;
         close HTML_FILE;
 
