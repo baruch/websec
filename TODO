@@ -16,7 +16,7 @@ Adam Stanley provided patches to add:
 Short Term
 ----------
 
-B3450, Inconsitency with the .websec/url.list location finding and using websec with a file parameter.
+B3450, Inconsistency with the .websec/url.list location finding and using websec with a file parameter.
 
 Run the html output of webdiff through a text mode browser for the benefit of
 text MUA users. This, coupled with the DiffOnly patch will provide an
@@ -25,7 +25,7 @@ approximate for the request of Daniel Fraga.
 B3497, Show also removed content from the html page, possibly use HTML::Diff
 
 Enable running multiple websec instances at the same time:
-http://groups.yahoo.com/group/websec/message/70
+MSG70 - see below
   - Implement
 
 Send mail from windows:
@@ -54,7 +54,7 @@ Long Term
 ---------
 
 Keep a website as an image to be put in the desktop background.
-http://groups.yahoo.com/group/websec/message/72
+MSG72 - see below
   - Investigate
 
 Create GUI for websec, similar to kwebwatch, but implement the GUI with Perl
@@ -64,4 +64,99 @@ Linux.
     GUI, where 'text' is one of them and is the same as now, a simple command
     line.
 
+
+Messages from Yahoo Groups
+==========================
+
+MSG70
+-----
+
+From seijit@bigfoot.com Sun Jul 29 19:18:14 2001
+Return-Path: <toku@nic.nec.co.jp>
+X-Sender: toku@nic.nec.co.jp
+X-Apparently-To: websec@yahoogroups.com
+Date: Mon, 30 Jul 2001 11:17:39 +0900
+Message-ID: <m3wv4rp3cs.wl@kux7.isc.nws.nesic.nec.co.jp>
+To: websec@yahoogroups.com
+Subject: race condition fix.
+Content-Type: text/plain; charset=US-ASCII
+From: seijit@bigfoot.com
+X-Yahoo-Message-Num: 70
+
+Hi,
+
+I use a lot of cron'ed websec and sometimes 2 or more websec runs at
+the same time creating (I think) a race condition. Sometimes I get
+weird HTML email where the subject and the body doesn't match.
+
+So I think this should fix it.
+
+Seiji T.
+
+P.S. Bottom part of the diff adds no caching keyword to the request
+which isn't related to this issue. BTW, "max-age=..." seems to be
+automatically added to "Cache-Control" probably by LWP, so I don't
+know if it's valid.
+
+diff -c websec.ORG websec
+*** websec.ORG	Tue Jun 26 11:04:36 2001
+--- websec	Fri Jul 27 18:29:03 2001
+***************
+*** 42,49 ****
+# Prepare pathnames.
+($base = $0) =~ s:[^/]+$::;
+$archive = "archive/";
+! $outgoing = $base . "index.html";
+! $page_current = $base . "retrieve.html";
+
+# prepare digest
+@digest = ();
+--- 42,49 ----
+# Prepare pathnames.
+($base = $0) =~ s:[^/]+$::;
+$archive = "archive/";
+! $outgoing = $base . $$ . ".index.html";
+! $page_current = $base . $$ . ".retrieve.html";
+
+# prepare digest
+@digest = ();
+***************
+*** 198,203 ****
+--- 198,207 ----
+$ua->env_proxy;
+if ($proxy ne "") { $ua->proxy(http => $proxy); }
+$req = new HTTP::Request('GET', $url);
++ $req->remove_header( "Cache-Control" );
++ $req->remove_header( "Pragma" );
++ $req->push_header( "Cache-Control" => "no-cache" );
++ $req->push_header( "Pragma" => "no-cache" );
+if ($auth ne "none") { $req->authorization_basic(split(/:/, $auth, 2)); }
+if ($proxyAuth ne "none") {
+$req->proxy_authorization_basic(split(/:/, $proxyAuth, 2));
+
+MSG72
+-----
+
+From f.gassauer@aon.at Sun Sep 02 09:29:02 2001
+Return-Path: <f.gassauer@aon.at>
+X-Sender: f.gassauer@aon.at
+X-Apparently-To: websec@egroups.com
+To: websec@yahoogroups.com
+Subject: Web Secretary Ver 1.3.4
+Date: Sun, 2 Sep 2001 18:26:46 +0200
+Message-Id: <20010902162647.NFSV10991.viefep15-int.chello.at@there>
+From: Ferdinand Gassauer <f.gassauer@aon.at>
+X-Yahoo-Message-Num: 72
+
+Hi!
+I just wanted to know if (and how) it is possible to save an hourly changed 
+web site (gif image) to my local hard disk (and use it as desktop background) 
+instead of letting it by emailed to me.
+thanx
+-- 
+
+regards
+Ferdinand Gassauer
+mailto:f.gassauer@aon.at
+http://www.goesing.at
 
