@@ -5,7 +5,7 @@ DOCDIR=$(DESTDIR)$(PREFIX)/share/doc/websec
 
 all: websec.1 webdiff.1
 
-install:
+install: all
 	install -d $(BINDIR)
 	install websec $(BINDIR)/
 	install webdiff $(BINDIR)/
