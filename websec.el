@@ -31,24 +31,24 @@
 
 ;; Keywords embedded anywhere (except [normally] in quoted strings)
 (defvar url-list-font-lock-list
-'(("^\\([^=\n\r]*\\)=\\([^\n\r]*\\)$"
-(2 font-lock-variable-name-face))))
+  '(("^\\([^=\n\r]*\\)=\\([^\n\r]*\\)$"
+     (2 font-lock-variable-name-face))))
 
 (defvar url-list-keywords
-'( "URL" "Auth" "Name" "Prefix" "Diff" "Hicolor" "Ignore" "IgnoreURL"
-"Tmin" "Tmax" "Proxy" "ProxyAuth" "Email" "EmailLink" "Digest" ))
+  '( "URL" "Auth" "Name" "Prefix" "Diff" "Hicolor" "Ignore" "IgnoreURL"
+     "Tmin" "Tmax" "Proxy" "ProxyAuth" "Email" "EmailLink" "Digest" ))
 
 (define-generic-mode 'url-list-mode
-;; comment-list
-'("#")
-;; keyword-list
-url-list-keywords
-;; font-lock-list
-url-list-font-lock-list
-;; auto-mode-list
-'("/url\.list$")
-;; function-list for setup
-nil )
+  ;; comment-list
+  '("#")
+  ;; keyword-list
+  url-list-keywords
+  ;; font-lock-list
+  url-list-font-lock-list
+  ;; auto-mode-list
+  '("/url\.list$")
+  ;; function-list for setup
+  nil )
 "Mode for highlighting Web Secretary URL files.")
 
 (provide 'url-list-mode)
