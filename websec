@@ -116,9 +116,12 @@ open ARGV, $base . "/url.list" unless exists $ARGV[0];
 while (<>) {
     chop $_;
     s/^\s*//;
+    s/\s*$//;
 
     # Ignore comments
-    if (m/^#.*?$/) { next; }
+    next if (m/^#/);
+    # Stop with a finish marker
+    last if (m/^__END__/);
 
     # Handle non-empty lines
     if ( length != 0 ) {

@@ -64,209 +64,7 @@ homepage so that you can be informed of the latest news and updates.
 Web Secretary is available at:   http://www.nongnu.org/websec/
 
 
-5. URL LIST
-
-The URL list consists of one or more sections separated by newlines.
-
-The following parameters (case-sensitive) are recognized in each section:
-
-    URL        - URL of web page to monitor
-
-    Auth       - Authentication information in "username:password" format. 
-                 Put "none" if no authentication needed.
-
-    Name       - Name of web site. Pages delivered to you will have the
-                 following format: "Name - Date (Day)" eg. "PC Magazine - 4
-                 Sep 98 (Fri)"
-
-    Prefix     - Prefix of filenames for archive files of web pages created
-                 by Web Secretary.
-
-    Diff       - Put "none" if you want Web Secretary to always mail this
-                 page to you instead of checking for and highlighting
-                 changes in the page.  Put "webdiff" if you want Web
-                 Secretary to check for changes.
-
-    Hicolor   -  Color used to highlight new or changed content. Currently,
-                 four colors are defined. They are: blue, pink, yellow and
-                 grey. You can also supply your own HTML color tag in the
-                 form "#rrggbb".
-
-    Ignore     - Comma-delimited List of section names containing ignore
-                 keywords. There must be NO SPACES between delimiters and
-                 section names. The ignore sections and keywords are stored
-                 in a file called "ignore.list".
-
-    IgnoreURL  - Comma-delimited List of section names containing ignore
-                 URLs. There must be NO SPACES between delimiters and
-                 section names. The ignore sections and keywords are stored
-                 in a file called "ignore.list".
-
-    Tmin       - Every token containing <= Tmin words will not be highlighted
-                 for differences.
-
-    Tmax       - Every token containing >= Tmax words will not be checked for
-                 ignore keywords.
-
-    Proxy      - Specify proxy "http://your.proxy.here:portnum" if you are
-                 using one. (Alternatively, you can make use of the
-                 "http_proxy" environment variable)
-
-    ProxyAuth  - Specify proxy authentication in "username:password" format.
-                 The code for this feature was contributed by Volker Stampa.
-
-    MailFrom   - The E-Mail address to send mail from, this can be left empty
-                 and the user used to run websec will be used.
-
-    Email      - Comma-delimited list of email addresses to send highlighted
-                 pages to.
-
-    EmailLink  - Comma-delimited list of email addresses to send URL of
-                 changed pages to.
-
-    Program    - Application to run with the diff-output-file. If "mozilla" is 
-                 specified here, the diffs are opened in new tabs of the Mozilla
-                 Browser.
-
-    Digest     - true|false or yes|no. This works only if EmailLink is
-                 specified. It consolidates all the changed URLs and sends
-                 them in one email.
-
-    UserAgent  - The User-Agent that will be sent by the web client. This can
-                 be used to bypass servers that prevent access based on the user
-                 agent.
-
-    DateFMT    - Date format to use in e-mail messages, can be empty for no date.
-                 Set it to " - %Y-%m-%d" for ISO dates. This is perl format for dates.
-
-    RandomWait - Websec waits for a random number of seconds between retries up
-                 to the value specified by the RandomWait keyword. This is to
-                 prevent websec from being blocked by websites that perform log
-                 analysis to find time similarities between requests.
-
-Any line which begins with a '#' is treated as comment and ignored.
-
-If a section does not contain a URL entry, the values provided will be
-treated as the default for the following sections.
-
-For example,
-
-    # Defaults
-    Auth = none
-    Diff = webdiff
-    Hicolor = blue
-    Ignore = General,Date_Time
-    IgnoreURL = Adverts
-    Tmin = 1
-    Tmax = 10
-    Proxy = http://proxy.nus.edu.sg:8080
-    Email = vchew@post1.com
-
-    # Web page to monitor which does not require authentication
-    URL = http://browserwatch.iworld.com/news.html 
-    Name = Browser Watch
-    Prefix = browsewatch
-
-    # New defaults with authentication information
-    Auth = user:password
-
-    # More web pages to monitor which requires authentication
-    URL = http://www.infoworld.com
-    Name = Infoworld
-    Prefix = infoworld
-
-    URL = http://developer.javasoft.com/
-    Name = Java Developer Central
-    Prefix = jdc
-
-
-6. IGNORE KEYWORDS
-
-When determining which parts of a particular web page has changed, you may
-want to skip those paragraphs that contains certain predefined words. For
-example, pages like InfoWorld, PC Magazine and PC Week often contain the
-current date/time regardless of whether there is new or changed content. In
-such cases, you can use IGNORE KEYWORDS to skip those paragraphs which
-contains date/time information.
-
-Ignore keywords are stored in a file called "ignore.txt" in the same
-directory as websec. Like the URL list, the ignore keywords are partitioned
-into different sections. Each section has a user-defined name. An example is
-shown below:
-
-        [General]
-        all rights reserved
-        an error occurred
-        click here
-        comments
-        copyright
-
-        [Date_Time]
-        January\s+\d{1,2}
-        February\s+\d{1,2}
-        March\s+\d{1,2}
-        April\s+\d{1,2}
-        May\s+\d{1,2}
-    
-In the example above, there are two sections: "General" and "Date_Time".
-You can use them in the URL list as follows:
-
-    Ignore = General
-
-You can also use multiple sections at one go:
-
-    Ignore = General,Date_Time
-
-If you use certain ignore keywords regularly, you might want to add them to
-a defaults section in the URL list.
-
-Ignore keywords can contain regular expressions. For example, the ignore
-keyword "January\s+\d{1,2}" tells websec to look for the string "January",
-followed by one or more spaces, followed by at least one but not more than
-two digits.
-
-Two sections of ignore keywords are supplied in this distribution. "General"
-contains some general ignore keywords which you may want to use. "Date_Time"
-contains date/time detectors coded using regular expressions. Feel free to
-add your own!
-
-
-7. IGNORE URLS
-
-Most advertisements in webpages are of the following form:
-
-        <A HREF="http://page.url.com/advert/cgi-bin/" ...>
-        <IMG SRC="advert.animated.gif" ...>
-        Click here for free beer!
-        </A>
-
-Such advertisements can be ignored when running webdiff using ignore URLs.
-
-Ignore URLs are also stored in "ignore.txt". They contain all of parts of
-the URL referred to by the <A HREF> tag which you want to ignore. An example
-is shown below:
-
-        [Adverts]
-        page.url.com/advert/cgi-bin/
-    
-Use the "Adverts" section in the URL list as follows:
-
-    IgnoreURL = Adverts
-
-You can also use multiple sections at one go:
-
-    IgnoreURL = Adverts1,Adverts2
-
-If you use certain ignore URLs regularly, you might want to add them
-to a defaults section in the URL list.
-
-Like ignore keywords, ignore URLs can contain regular expressions.
-
-An "Adverts" section is supplied in this distribution. Feel free to add your
-own!
-
-
-8. DIGEST
+5. DIGEST
 
 This feature is contributed by Matti Airas:
 
@@ -287,7 +85,7 @@ This feature is contributed by Matti Airas:
 > Matti Airas
 
 
-9. INSTALLING LWP
+6. INSTALLING LWP
 
 Websec requires the Perl module 'LWP' to work. The quickest way to install
 this module is to type:
@@ -299,7 +97,7 @@ at the command line.
 Thanks to Jeff for contributing this tip!
 
 
-10. HISTORY
+7. HISTORY
 
 1.7 - Under construction
 
@@ -312,7 +110,11 @@ Thanks to Jeff for contributing this tip!
     * Added an EmailError option to disable sending error messages. This was
 	  requested numerous times (Bug#3498 on Savannah), this fix is based on a
 	  patch from Peter Bieringer.
-	  
+
+    * Add man pages for url.list and ignore.list, removed their documentation
+	  from the README file and moved it to the files themselves for easier
+	  reference.
+
 1.6.0 - Released on 05 May 2003
 
 * Added DateFMT feature to set Date Formats in mail subjects.
@@ -484,7 +286,7 @@ that failed to be highlighted. Finally, I have something which I use on a
 daily basis now and is prepared to share with the rest of the world.
 
 
-11. ACKNOWLEDGEMENT
+8. ACKNOWLEDGEMENT
 
 I would like to thank the GNU people. I don't know them personally, but they
 have blessed us with free and great tools such as Linux, gcc, emacs, Perl,

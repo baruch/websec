@@ -110,6 +110,14 @@ if ( $ignore ne "none" ) {
       or die "Cannot open $basedir/$ignoreFile: $!\n";
     while (<IGNORE>) {
         chomp;
+        s/^\s*//;
+        s/\s*$//;
+
+        # Ignore comments
+        next if (m/^#/);
+        # Stop with a finish marker
+        last if (m/^__END__/);
+
         if ( $ignoreStartRead && $_ eq "" ) { $ignoreStartRead = 0; next; }
         if ($ignoreStartRead) { $ignorelist .= $_ . "\r"; next; }
         ( $section = $_ ) =~ s:\[\s*(.*?)\s*\]:$1:sig;
@@ -131,6 +139,14 @@ if ( $ignoreurl ne "none" ) {
       or die "Cannot open $basedir/$ignoreFile: $!\n";
     while (<IGNORE>) {
         chomp;
+        s/^\s*//;
+        s/\s*$//;
+
+        # Ignore comments
+        next if (m/^#/);
+        # Stop with a finish marker
+        last if (m/^__END__/);
+
         if ( $ignoreStartRead && $_ eq "" ) { $ignoreStartRead = 0; next; }
         if ($ignoreStartRead) { $ignorelist .= $_ . "\r"; next; }
         ( $section = $_ ) =~ s:\[\s*(.*?)\s*\]:$1:sig;
