@@ -36,6 +36,7 @@ use POSIX qw(strftime);
 use File::Spec;
 use Getopt::Long;
 use Pod::Usage;
+use File::Temp qw/tempfile/;
 
 # Print introduction
 print "Web Secretary Ver 1.7.0\n";
@@ -74,7 +75,8 @@ $base =~ s/\/$//;
 $archive = "$base/archive";
 mkdir $base,    0750 if !-d $base;
 mkdir $archive, 0750 if !-d $archive;
-$page_current = "$base/retrieve.html";
+($current_fh, $page_current) = tempfile(DIR=>"$base", UNLINK=>1, SUFFIX=>".html");
+$current_fh=-1;
 
 # Red Hat has sendmail in /usr/sbin/sendmail, but LWP::Protocol::mailto
 # expects it in /usr/lib/sendmail.  Revert to the Red Hat location if there
@@ -179,13 +181,13 @@ if (@digest) {
 }
 
 if (@htmldigest) {
-    open( OUTPAGE, "> $base/index.html" ) or die "Cannot open $base/index.html: $!\n";
+    ($OUTPAGE, $pagename) = tempfile(DIR=>"$base", UNLINK=>1, SUFFIX=>".html");
     print OUTPAGE "<HTML><BODY>The contents of the following URLs has changed:<P><P>";
     foreach (@htmldigest) { print OUTPAGE "$_<P>\n"; }
     print OUTPAGE "<P></BODY></HTML>";
     close(OUTPAGE);
 
-    &ShowDocument( $program, $base."/index.html");
+    &ShowDocument( $program, $pagename);
 }
 
 
