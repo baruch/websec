@@ -4,6 +4,7 @@ MANDIR=$(DESTDIR)$(PREFIX)/share/man
 MAN1DIR=$(MANDIR)/man1
 MAN5DIR=$(MANDIR)/man5
 DOCDIR=$(DESTDIR)$(PREFIX)/share/doc/websec
+EMACSDIR=$(DESTDIR)$(PREFIX)/share/emacs/site-lisp
 
 PROGSRC=websec webdiff
 CONFSRC=url.list ignore.list
@@ -34,6 +35,8 @@ install: all
 	install -m 0644 url.list $(DOCDIR)/examples/
 	install -m 0644 ignore.list $(DOCDIR)/examples/
 	install -m 0644 README $(DOCDIR)/
+
+	install -m 0644 emacs.el $(EMACSDIR)
 
 clean:
 	rm -f $(GENFILES)
