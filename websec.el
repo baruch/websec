@@ -22,9 +22,6 @@
 ;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 ;; Boston, MA 02111-1307, USA.
 
-;; This file lost the indentation in the mail archive of websec in yahoo.
-;; It is placed here in the hope that some user will provide a correct version.
-
 ;; Not available in XEmacs
 (require 'generic)
 (require 'font-lock)
@@ -48,7 +45,7 @@
   ;; auto-mode-list
   '("/url\.list$")
   ;; function-list for setup
-  nil )
-"Mode for highlighting Web Secretary URL files.")
+  nil
+  "Mode for highlighting Web Secretary URL files.")
 
 (provide 'url-list-mode)
