@@ -102,33 +102,33 @@ if ( !-e $htmldiffbin ) {
 
 # Set default values
 local %defaults = (
-    URL        => "",
-    Auth       => "none",
-    Name       => "",
-    Prefix     => "",
-    Diff       => "webdiff",
-    Hicolor    => "blue",
-    AsciiMarker => 0,
-    Ignore     => "none",
-    IgnoreURL  => "none",
-    Email      => "",
-    EmailLink  => "",
-    EmailError => 1,
-    Program    => "",
-    ProgramDigest => "",
-    Proxy      => "",
-    ProxyAuth  => "none",
-    Randomwait => 0,
-    Retry      => 3,
-    Retrywait  => 0,
-    Timeout    => 20,
-    Tmin       => 0,
-    Tmax       => 99999,
-    AddSubject => "",
-    Digest     => "false",
-    UserAgent  => "WebSec/1.7",
-    DateFMT    => " - %d %B %Y (%a)",
-    MailFrom   => "",
+    url        => "",
+    auth       => "none",
+    name       => "",
+    prefix     => "",
+    diff       => "webdiff",
+    hicolor    => "blue",
+    asciimarker => 0,
+    ignore     => "none",
+    ignoreurl  => "none",
+    email      => "",
+    emaillink  => "",
+    emailerror => 1,
+    program    => "",
+    programdigest => "",
+    proxy      => "",
+    proxyauth  => "none",
+    randomwait => 0,
+    retry      => 3,
+    retrywait  => 0,
+    timeout    => 20,
+    tmin       => 0,
+    tmax       => 99999,
+    addsubject => "",
+    digest     => "false",
+    useragent  => "WebSec/1.7",
+    datefmt    => " - %d %B %Y (%a)",
+    mailfrom   => "",
 );
 %siteinfo = %defaults;
 
@@ -162,7 +162,7 @@ while (<>) {
 }
 
 # Process last site if available
-if ( $rc == 0 && $siteinfo{URL} ne "" ) { $rc = &HandleSite(); }
+if ( $rc == 0 && $siteinfo{url} ne "" ) { $rc = &HandleSite(); }
 
 # Delete temp files
 unlink($page_current);
@@ -172,7 +172,7 @@ if (@digest) {
       "The contents of the following URLs have changed:\n\n"
       . join ( "\n", @digest ) . "\n";
     $subj = "$addsubject$today";
-    &MailMessage( $linkmsg, $subj, $digestEmail, $siteinfo{MailFrom} );
+    &MailMessage( $linkmsg, $subj, $digestEmail, $siteinfo{mailfrom} );
 }
 
 if (@htmldigest) {
@@ -196,6 +196,7 @@ sub HandleInput() {
     # Get keyword, value pair
     ( $keyword, $value ) = split ( /=/, $_, 2 );
     $keyword =~ s/^\s*(.*?)\s*$/$1/;
+    $keyword =~ tr/A-Z/a-z/;
     $value   =~ s/^\s*\"?(.*?)\"?\s*$/$1/;
 
     # Check if valid keyword
@@ -223,30 +224,28 @@ sub HandleInput() {
 sub HandleSite() {
 
     # Get parameter values for this page
-    $url        = $siteinfo{URL};
-    $auth       = $siteinfo{Auth};
-    $name       = $siteinfo{Name};
-    $prefix     = $siteinfo{Prefix};
-    $diff       = $siteinfo{Diff};
-    $hicolor    = $siteinfo{Hicolor};
-    $ignore     = $siteinfo{Ignore};
-    $ignoreurl  = $siteinfo{IgnoreURL};
-    $email      = $siteinfo{Email};
-    $emailLink  = $siteinfo{EmailLink};
-    $program    = $siteinfo{Program};
-    $programdigest = $siteinfo{ProgramDigest};
-    $proxy      = $siteinfo{Proxy};
-    $proxyAuth  = $siteinfo{ProxyAuth};
-    $randomwait = $siteinfo{Randomwait};
-    $retry      = $siteinfo{Retry};
-    $retrywait  = $siteinfo{Retrywait};
-    $timeout    = $siteinfo{Timeout};
-    $tmin       = $siteinfo{Tmin};
-    $tmax       = $siteinfo{Tmax};
-    $addsubject = $siteinfo{AddSubject};
-    $digest     = $siteinfo{Digest};
-    $useragent  = $siteinfo{UserAgent};
-    $datefmt    = $siteinfo{DateFMT};
+    $url        = $siteinfo{url};
+    $name       = $siteinfo{name};
+    $prefix     = $siteinfo{prefix};
+    $diff       = $siteinfo{diff};
+    $hicolor    = $siteinfo{hicolor};
+    $ignore     = $siteinfo{ignore};
+    $ignoreurl  = $siteinfo{ignoreurl};
+    $email      = $siteinfo{email};
+    $emailLink  = $siteinfo{emaillink};
+    $program    = $siteinfo{program};
+    $programdigest = $siteinfo{programdigest};
+    $proxy      = $siteinfo{proxy};
+    $randomwait = $siteinfo{randomwait};
+    $retry      = $siteinfo{retry};
+    $retrywait  = $siteinfo{retrywait};
+    $timeout    = $siteinfo{timeout};
+    $tmin       = $siteinfo{tmin};
+    $tmax       = $siteinfo{tmax};
+    $addsubject = $siteinfo{addsubject};
+    $digest     = $siteinfo{digest};
+    $useragent  = $siteinfo{useragent};
+    $datefmt    = $siteinfo{datefmt};
 
     # Get today's date in the format we want.
     $today = strftime $datefmt, localtime;
@@ -282,7 +281,7 @@ sub HandleSite() {
       . "--hicolor=$hicolor --ignore=$ignore --ignoreurl=$ignoreurl --tmin=$tmin --tmax=$tmax";
      $htmldiff = "$htmldiffbin $page_previous $page_current > $outgoing";
 
-    if ($siteinfo{AsciiMarker}) {
+    if ($siteinfo{asciimarker}) {
         $webdiff .= " --asciimarker";
     }
 
@@ -358,7 +357,7 @@ sub HandleSite() {
                     if ( $email ne "" ) {
                         print "Sending highlighted page to $email ...\n";
                         MailDocument( $outgoing, $subj, $email,
-                            $siteinfo{MailFrom} );
+                            $siteinfo{mailfrom} );
                     }
                     if ( $emailLink ne "" ) {
                         print "Sending link to $emailLink ...\n";
@@ -372,7 +371,7 @@ sub HandleSite() {
 "The contents of the following URL has changed:\n$url\n\nIt can also be found at:\nfile://$filepath\n";
                             MailMessage(
                                 $linkmsg,   $subj,
-                                $emailLink, $siteinfo{MailFrom}
+                                $emailLink, $siteinfo{mailfrom}
                             );
                         }
                     }
@@ -451,7 +450,7 @@ sub HandleSite() {
         else {
             if ( $email ne "" ) {
                 MailDocument( $page_current, $subj, $email,
-                    $siteinfo{MailFrom} );
+                    $siteinfo{mailfrom} );
             }
             if ($page_previousExists) { rename $page_previous, $page_archive; }
             rename $page_current, $page_previous;
@@ -466,16 +465,16 @@ sub HandleSite() {
           . "Detailed error as follows:\n"
           . $resp->error_as_HTML;
 
-        if ( $email ne "" && $siteinfo{EmailError} ) {
-            MailMessage( $errmsg, $subj, $email, $siteinfo{MailFrom} );
+        if ( $email ne "" && $siteinfo{emailerror} ) {
+            MailMessage( $errmsg, $subj, $email, $siteinfo{mailfrom} );
         }
-        if ( $emailLink ne "" && $siteinfo{EmailError} ) {
+        if ( $emailLink ne "" && $siteinfo{emailerror} ) {
             if ( ( $digest ne "no" ) && ( $digest ne "false" ) ) {
                 push @digest, "Unable to retrieve: $url";
                 ($digestEmail) or ( $digestEmail = $emailLink );
             }
             else {
-                MailMessage( $errmsg, $subj, $emailLink, $siteinfo{MailFrom} );
+                MailMessage( $errmsg, $subj, $emailLink, $siteinfo{mailfrom} );
             }
         }
     }
@@ -488,10 +487,10 @@ sub PrepareRequest() {
 
     $req = new HTTP::Request( 'GET', $url );
 
-    my $auth = $siteinfo{Auth};
+    my $auth = $siteinfo{auth};
     if ( $auth ne "none" ) { $req->authorization_basic( split ( /:/, $auth, 2 ) ); }
 
-    my $proxyAuth = $siteinfo{$proxyAuth};
+    my $proxyAuth = $siteinfo{proxyauth};
     if ( $proxyAuth ne "none" ) { $req->proxy_authorization_basic( split ( /:/, $proxyAuth, 2 ) ); }
     
     #$req->push_header("Accept" => "text/html, text/plain, text/*, */*");

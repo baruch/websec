@@ -51,7 +51,7 @@ AsciiMarker = 1
 # URL, Name and Prefix parameters must be specified for each site.
 ##########################################################################################
 
-URL = http://browserwatch.iworld.com/news.html 
+url = http://browserwatch.iworld.com/news.html 
 Name = Browser Watch
 Prefix = browse-watch
 

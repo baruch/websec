@@ -8,6 +8,8 @@
     * Replace TABLE tags with SPAN tags to highlight differences, this is
       reported to work better for some users.
 
+    * Accept keywords for url.list in all cases.
+    
     * Use sendmail from /usr/sbin/ if it's no available in /usr/lib/, this
       fixes a problem with RedHat 9. (Thanks to Michael Wittman)
 

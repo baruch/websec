@@ -18,6 +18,7 @@ elseif exists("b:current_syntax")
 	finish
 endif
 
+syn case ignore
 syn keyword urllistCommand  Auth Diff Hicolor Ignore IgnoreURL Tmin Tmax ProxyAuth
 syn keyword urllistCommand  Email EmailLink EmailError Program MailFrom Proxy con
 syn keyword urllistCommand  Program URL Name Prefix AsciiMarker Digest
