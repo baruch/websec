@@ -233,7 +233,7 @@ sub HandleSite() {
     $subj    = "$addsubject $name - $today";
     $webdiff =
 "$webdiffbin --basedir=$base --archive=$page_previous --current=$page_current --out=$outgoing "
-      . "--hicolor =$hicolor --ignore=$ignore --ignoreurl=$ignoreurl --tmin=$tmin --tmax=$tmax";
+      . "--hicolor=$hicolor --ignore=$ignore --ignoreurl=$ignoreurl --tmin=$tmin --tmax=$tmax";
 
     # Download URL using LWP
     $ua = new LWP::UserAgent;
