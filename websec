@@ -150,9 +150,9 @@ sub HandleInput()
     }
 
 	# Allow values from the environment
-	if ($value =~ m/^\$/)
+	if ($value =~ m/^\${([^}]+)}/)
 	{
-		$value = $ENV{$value};
+		$value = $ENV{$1};
 	}
 
     $siteinfo{$keyword} = $value;
