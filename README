@@ -290,6 +290,8 @@ Thanks to Jeff for contributing this tip!
 * Enabled the user to run websec from the current directory without the
   multi-user ~/.websec/ setup, the multi-user setup is the default unless you
   run websec from a directory with the url.list file.
+* Allow using environment variables in config file, this enables things like:
+  Email = ${USER}@example.com
 * Moved the manpages to pod and into the files, this enables fancy options such
   as -help and -man to work and reduces duplication of effort.
 

@@ -23,8 +23,8 @@ Ignore    = General,Date_Time
 IgnoreURL = Adverts
 Tmin      = 0
 Tmax      = 99999
-Email     = myself@example.com
-EmailLink = myself@example.com
+Email     = ${USER}@example.com
+EmailLink = ${USER}@example.com
 
 ##########################################################################################
 # Sites to monitor
