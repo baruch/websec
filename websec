@@ -27,7 +27,10 @@
 #
 #################################################################################
 
+my $feature_compress = 1;
+
 use LWP::UserAgent;
+eval { "load Compress::Zlib;" } or $feature_compress=0;
 use POSIX qw(strftime);
 use File::Spec;
 use Getopt::Long;
@@ -263,6 +266,13 @@ sub HandleSite() {
     if ( $proxyAuth ne "none" ) {
         $req->proxy_authorization_basic( split ( /:/, $proxyAuth, 2 ) );
     }
+    #$req->push_header("Accept" => "text/html, text/plain, text/*, */*");
+    if (not $feature_compress) {
+        print "No feature compress\n";
+        $req->push_header("Accept-Encoding" => "identity");
+    } else { 
+        print "YES feature compress\n";
+    }
 
     # Try up to '$retry' times to download URL
     $counter = 0;
@@ -282,6 +292,22 @@ sub HandleSite() {
 
     # If URL is successfully downloaded
     if ( $resp->is_success ) {
+        # Check if the data is gzip compressed, decompress if it is.
+        if (($resp->content_encoding || "") =~ /gzip/) {
+            my $new_content;
+
+            if ($feature_compress) {
+                $new_content = Compress::Zlib::memGunzip($resp->content);
+            } else {
+                $new_content = "Server sent gzip compressed data, and we are missing Compress::Gzip";
+            }
+            if (defined $new_content) {
+                $resp->content($new_content);
+                $resp->content_length(length $new_content);
+                $resp->content_encoding("");
+            }
+        }
+    
         open( HTML_FILE, ">$page_current" );
         print HTML_FILE "<!-- X-URL: ", $resp->base, " -->\n";
         print HTML_FILE "<BASE HREF= \"", $resp->base . "\">\n";

@@ -25,6 +25,9 @@
     * Fixed usage of environment variables in definitions, also allowed using
       multiple environment variables in a single line.
 
+    * Handle Content-Encoding: gzip, but if the Compress::Gzip module is not
+      available don't just die.
+
 1.6.0 - Released on 05 May 2003
 
     * Added DateFMT feature to set Date Formats in mail subjects.
