@@ -143,7 +143,11 @@ if (@digest) {
     $linkmsg =
       "The contents of the following URLs have changed:\n\n"
       . join ( "\n", @digest ) . "\n";
-    $subj = "[websec] - $today";
+	if (! $addsubject eq "") {
+		$subj = "$today";
+	} else {
+		$subj = "$addsubject - $today";
+	}
     &MailMessage( $linkmsg, $subj, $digestEmail );
 }
 
