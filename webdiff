@@ -312,17 +312,9 @@ sub TokenIsMangledHTMLTag() {
 sub TokenContainsIgnoreKeyword() {
     my $token = shift (@_);
     $token =~ s/\s{2,}/ /sig;
-    $tokdup = $token;
 
     # If this token contains >= tmax no. of words, do not ignore
-    $tokdup =~ s/\@\@\@\@&nbsp;~~~~/ /sig;
-    $tokdup =~ s/~~~~/</sig;
-    $tokdup =~ s/\@\@\@\@/>/sig;
-    $tokdup =~ s/<A(\s+[^>]*)<([^>]*)>([^>])*>//sig;
-    $tokdup =~ s/<[^>]*>//sig;
-    $tokdup =~ s/^\s*//sig;
-    $tokdup =~ s/\s*$//sig;
-    $tokdup =~ s/\s+/ /sig;
+    $tokdup = &ReduceSpaces($token);
     @words = split /\s/, $tokdup;
     if ($debug) { print "#### C" . ( $#words + 1 ) . ": $tokdup\n"; }
     if ( $#words + 1 > $tmax ) { return 0; }
@@ -342,17 +334,9 @@ sub TokenContainsIgnoreKeyword() {
 sub TokenExists() {
     my $token = shift (@_);
     $token =~ s/\s{2,}/ /sig;
-    $tokdup = $token;
 
     # If this token contains <= tmin no. of words, don't check
-    $tokdup =~ s/\@\@\@\@&nbsp;~~~~/ /sig;
-    $tokdup =~ s/~~~~/</sig;
-    $tokdup =~ s/\@\@\@\@/>/sig;
-    $tokdup =~ s/<A(\s+[^>]*)<([^>]*)>([^>])*>//sig;
-    $tokdup =~ s/<[^>]*>//sig;
-    $tokdup =~ s/^\s*//sig;
-    $tokdup =~ s/\s*$//sig;
-    $tokdup =~ s/\s+/ /sig;
+    $tokdup = &ReduceSpaces($token);
     @words = split /\s/, $tokdup;
     if ( $#words + 1 <= $tmin ) { return 1; }
 
@@ -401,6 +385,21 @@ sub MangleHTML() {
     }
 
     return $page;
+}
+
+sub ReduceSpaces() {
+    my $token = shift(@_);
+    
+    $token =~ s/\@\@\@\@&nbsp;~~~~/ /sig;
+    $token =~ s/~~~~/</sig;
+    $token =~ s/\@\@\@\@/>/sig;
+    $token =~ s/<A(\s+[^>]*)<([^>]*)>([^>])*>//sig;
+    $token =~ s/<[^>]*>//sig;
+    $token =~ s/^\s*//sig;
+    $token =~ s/\s*$//sig;
+    $token =~ s/\s+/ /sig;
+
+    return $token;
 }
 
 __END__
