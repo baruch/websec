@@ -173,6 +173,10 @@ The following parameters (case-sensitive) are recognized in each section:
                  section names. The ignore sections and keywords are stored
                  in a file called "ignore.list".
 
+    AsciiMarker - If set to 1 it will add ascii markers around the changes so
+	             that highlighting is noticeable in text mode too. Useful for
+				 text MUAs users.
+
     Tmin       - Every token containing <= Tmin words will not be highlighted
                  for differences.
 

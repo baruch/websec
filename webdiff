@@ -33,6 +33,7 @@ $oldpage    = "";
 $curpage    = "";
 $outpage    = "";
 $hicolor    = "blue";
+$asciimarker = 0;
 $ignore     = "none";
 $ignoreurl  = "none";
 $tmin       = 0;
@@ -52,6 +53,7 @@ GetOptions(
     "current=s"    => \$curpage,
     "out=s"        => \$outpage,
     "hicolor=s"    => \$hicolor,
+    "asciimarker"  => \$asciimarker,
     "ignore=s"     => \$ignore,
     "ignoreurl=s"  => \$ignoreurl,
     "tmin=i"       => \$tmin,
@@ -295,10 +297,12 @@ sub PerformDiff() {
         }
         else {
             if ($debug) { print "#### Token has been highlighted!\n"; }
+            if ($asciimarker) {
+                $token = "###>>>". $token ."<<<###";
+            }
             $token =
-"<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=0><TR><TD BGCOLOR=$hicolor>"
-              . $token
-              . "</TD></TR></TABLE>";
+                    "<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=0><TR>".
+                    "<TD BGCOLOR=$hicolor>" . $token . "</TD></TR></TABLE>";
             $changeStatus = 1;
         }
     }

@@ -4,15 +4,18 @@
       (Thanks to Adam Stanley)
 
     * Added URL to the mail subject, to simplify jumping to a changed page from
-	  the mail folder.
+      the mail folder.
 
     * Added an EmailError option to disable sending error messages. This was
-	  requested numerous times (Bug#3498 on Savannah), this fix is based on a
-	  patch from Peter Bieringer.
+      requested numerous times (Bug#3498 on Savannah), this fix is based on a
+      patch from Peter Bieringer.
 
     * Add man pages for url.list and ignore.list, removed their documentation
-	  from the README file and moved it to the files themselves for easier
-	  reference.
+      from the README file and moved it to the files themselves for easier
+      reference.
+
+    * Add "ascii" color highlighting from Javier M. Mora. Instead of using color
+      to highlight it uses ascii characters around the change.
 
 1.6.0 - Released on 05 May 2003
 
