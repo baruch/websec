@@ -31,7 +31,7 @@ my $feature_compress = 1;
 
 use LWP::UserAgent;
 use URI;
-eval { "load Compress::Zlib;" } or $feature_compress=0;
+eval { require Compress::Zlib; } or $feature_compress=0;
 use POSIX qw(strftime);
 use File::Spec;
 use Getopt::Long;
