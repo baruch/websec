@@ -53,6 +53,9 @@ http://doublclick4.net
 [cvsweb]
 \d+ (years?|months?|weeks?|days?|hours?|minutes?)
 
+[Slashdot]
+\d+ of \d+
+
 __END__
 
 =head1 NAME

@@ -30,6 +30,7 @@ Email     = ${USER}@example.com
 EmailLink = ${USER}@example.com
 #MailFrom = ${USER}@example.com
 EmailError = 1
+AsciiMarker = 1
 
 # enable this to open the webdiff-output in a new Mozilla Tab or specify a 
 # different application to run with the changed page
@@ -88,6 +89,7 @@ Prefix = cnet-news
 URL = http://www.slashdot.org/
 Name = Slashdot.org
 Prefix = slashdot
+Ignore = Slashdot,General,Date_Time
 
 URL = http://www.linuxworld.com/
 Name = Linux World
@@ -128,14 +130,6 @@ URL = http://www.openbsd.org/cgi-bin/cvsweb/src/sys/sys/tree.h
 Name = OpenBSD tree implementation
 Prefix = openbsd-tree
 Ignore = cvsweb
-
-URL = http://slashdot.org/
-Name = Slashdot
-Prefix = slashdot
-
-URL = http://freshmeat.net/
-Name = FreshMeat
-Prefix = freshmeat
 
 __END__
 
