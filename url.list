@@ -23,8 +23,8 @@ Ignore    = General,Date_Time
 IgnoreURL = Adverts
 Tmin      = 0
 Tmax      = 99999
-Email     = your_email@domain.net
-EmailLink = your_email@domain.net
+Email     = myself@example.com
+EmailLink = myself@example.com
 
 ##########################################################################################
 # Sites to monitor
@@ -64,10 +64,6 @@ URL = http://www.pcweek.com/
 Name = PC Week
 Prefix = pcweek
 
-URL = http://www.sciam.com/currentissue.html
-Name = Scientic American
-Prefix = sci-american
-
 URL = http://www.sun.com/sunworldonline/
 Name = SunWorld Online
 Prefix = sunworld-online
@@ -100,10 +96,6 @@ Prefix = linux-world
 URL = http://www.theregister.co.uk/
 Name = The Register
 Prefix = the-register
-
-URL = http://www.linuxtoday.com/opinions/
-Name = Linux Today
-Prefix = linux-today
 
 URL = http://headlines.yahoo.com/Full_Coverage/Tech/Linux/
 Name = Yahoo Linux News
