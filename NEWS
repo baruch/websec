@@ -1,4 +1,4 @@
-1.7.0 - Under construction
+1.7.0 - Released on 31-May-2003
 
     * Add MailFrom, to set the address from which the mail will appear to come.
       (Thanks to Adam Stanley)
