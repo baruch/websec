@@ -57,7 +57,7 @@ __END__
 
 =head1 NAME
 
-url.list - websec url monitoring configuration
+ignore.list - websec url monitoring configuration
 
 =head1 DESCRIPTION
 
@@ -70,7 +70,7 @@ current date/time regardless of whether there is new or changed content. In
 such cases, you can use IGNORE KEYWORDS to skip those paragraphs which
 contains date/time information.
 
-Ignore keywords are stored in a file called "ignore.txt" in the same
+Ignore keywords are stored in a file called "ignore.list" in the same
 directory as websec. Like the URL list, the ignore keywords are partitioned
 into different sections. Each section has a user-defined name. An example is
 shown below:
@@ -123,7 +123,7 @@ Most advertisements in webpages are of the following form:
 
 Such advertisements can be ignored when running webdiff using ignore URLs.
 
-Ignore URLs are also stored in "ignore.txt". They contain all of parts of
+Ignore URLs are also stored in "ignore.list". They contain all of parts of
 the URL referred to by the <A HREF> tag which you want to ignore. An example
 is shown below:
 
