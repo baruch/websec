@@ -66,7 +66,6 @@ $base =~ s/\/$//;
 $archive = "$base/archive";
 mkdir $base,    0750 if !-d $base;
 mkdir $archive, 0750 if !-d $archive;
-$outgoing     = "$base/index.html";
 $page_current = "$base/retrieve.html";
 
 # Location of webdiff, if it's in the same directory as websec, use it,
@@ -77,8 +76,17 @@ if ( !-e $webdiffbin ) {
     $webdiffbin = "webdiff";
 }
 
+$htmldiffbin = "$FindBin::Bin/htmldiff";
+if ( !-e $htmldiffbin ) {
+  $htmldiffbin = "./htmldiff";
+  if ( !-e $htmldiffbin ) {
+      $htmldiffbin = "htmldiff";
+  }
+}
+
 # prepare digest
 @digest = ();
+@htmldigest = ();
 
 # Set default values
 local %defaults = (
@@ -95,6 +103,7 @@ local %defaults = (
     EmailLink  => "",
     EmailError => 1,
     Program    => "",
+    ProgramDigest => "",
     Proxy      => "",
     ProxyAuth  => "none",
     Randomwait => 0,
@@ -144,7 +153,6 @@ while (<>) {
 if ( $rc == 0 && $siteinfo{URL} ne "" ) { $rc = &HandleSite(); }
 
 # Delete temp files
-unlink($outgoing);
 unlink($page_current);
 
 if (@digest) {
@@ -154,6 +162,17 @@ if (@digest) {
     $subj = "$addsubject$today";
     &MailMessage( $linkmsg, $subj, $digestEmail, $siteinfo{MailFrom} );
 }
+
+if (@htmldigest) {
+    open( OUTPAGE, "> $base/index.html" ) or die "Cannot open $base/index.html: $!\n";
+    print OUTPAGE "<HTML><BODY>The contents of the following URLs has changed:<P><P>";
+    foreach (@htmldigest) { print OUTPAGE "$_<P>\n"; }
+    print OUTPAGE "<P></BODY></HTML>";
+    close(OUTPAGE);
+
+    &ShowDocument( $program, $base."/index.html");
+}
+
 
 # End of main program
 exit $rc;
@@ -203,6 +222,7 @@ sub HandleSite() {
     $email      = $siteinfo{Email};
     $emailLink  = $siteinfo{EmailLink};
     $program    = $siteinfo{Program};
+    $programdigest = $siteinfo{ProgramDigest};
     $proxy      = $siteinfo{Proxy};
     $proxyAuth  = $siteinfo{ProxyAuth};
     $randomwait = $siteinfo{Randomwait};
@@ -240,6 +260,7 @@ sub HandleSite() {
     $pagebase            = "$archive/$prefix";
     $page_previous       = "$pagebase.html";
     $page_archive        = "$pagebase.old.html";
+    $outgoing     = "$pagebase.diff.html";
     $page_previousExists = 1;
     open( FILE, $page_previous ) or $page_previousExists = 0;
     close(FILE);
@@ -247,6 +268,7 @@ sub HandleSite() {
     $webdiff =
 "$webdiffbin --basedir=$base --archive=$page_previous --current=$page_current --out=$outgoing "
       . "--hicolor=$hicolor --ignore=$ignore --ignoreurl=$ignoreurl --tmin=$tmin --tmax=$tmax";
+     $htmldiff = "$htmldiffbin $page_previous $page_current > $outgoing";
 
     if ($siteinfo{AsciiMarker}) {
         $webdiff .= " --asciimarker";
@@ -341,7 +363,63 @@ sub HandleSite() {
                         }
                     }
                     if ( $program ne "" ) {
-                        ShowDocument( $program, $outgoing );
+                        if ( $programdigest ne "true" ) {
+                            ShowDocument( $program, $outgoing );
+                        }
+                        else {
+                            push @htmldigest, "<A HREF=\"".$outgoing."\">Changes for ".$name."</A>".
+                                    "&nbsp;<A HREF=\"".$page_archive."\">previous page</A>".
+                                    "&nbsp;<A HREF=\"".$page_previous."\">current page</A>".
+                                    "&nbsp;<A HREF=\"".$url."\">current page on the net</A><P><P>";
+                        }
+                    }
+                }
+                else {
+                    print "No changes were detected.\n";
+                }
+                rename $page_previous, $page_archive;
+                rename $page_current,  $page_previous;
+            }
+            else {
+                print
+                  "No previous version for this page. Storing in archive ...\n";
+                rename $page_current, $page_previous;
+            }
+        }
+        elsif ( $diff eq "htmldiff" )
+        {
+            if ( $page_previousExists == 1 ) {
+                print
+"Highlighting differences from previous version of webpage using htmldiff...\n";
+                $rc = system($htmldiff);
+                if ( $rc != 0 ) {
+                    if ( $email ne "" ) {
+                        print "Sending highlighted page to $email ...\n";
+                        MailDocument( $outgoing, $subj, $email );
+                    }
+                    if ( $emailLink ne "" ) {
+                        print "Sending link to $emailLink ...\n";
+                        if ( ( $digest ne "no" ) && ( $digest ne "false" ) ) {
+                            push @digest, $url;
+                            ($digestEmail) or ( $digestEmail = $emailLink );
+                        }
+                        else {
+                            my $filepath = File::Spec->rel2abs($page_previous);
+                            $linkmsg =
+"The contents of the following URL has changed:\n$url\n\nIt can also be found at:\nfile://$filepath\n";
+                            MailMessage( $linkmsg, $subj, $emailLink );
+                        }
+                    }
+                    if ( $program ne "" ) {
+                        if ( $programdigest ne "true" ) {
+                            ShowDocument( $program, $outgoing );
+                        }
+                        else {
+                            push @htmldigest, "<A HREF=\"".$outgoing."\">Changes for ".$name."</A>".
+                                    "&nbsp;<A HREF=\"".$page_archive."\">previous page</A>".
+                                    "&nbsp;<A HREF=\"".$page_previous."\">current page</A>".
+                                    "&nbsp;<A HREF=\"".$url."\">current page on the net</A><P><P>";
+                        }
                     }
                 }
                 else {

@@ -1,5 +1,8 @@
 2.0.0 - Release on ...
 
+    * Support for diffing with HTML::Diff from CPAN, this has support to show
+      the removed text in addition to the changed text.
+
     * Special support for konqueror for Program directive.
 
 1.7.0 - Released on 31-May-2003

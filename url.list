@@ -5,7 +5,9 @@
 # overridden by the site configuration values. Parameter names are case-sensitive.
 #
 # Auth       = "none"; or "username:password"
-# Diff       = "webdiff" to detect and highlight differences; or "none" to mail page as is.
+# Diff       = "webdiff" to detect and highlight differences,
+#              "htmldiff" to use HTML::Diff from cpan
+#              "none" to mail page as is.
 # HiColor    = "blue"; "yellow"; "pink"; or "grey".
 # Ignore     = list of comma-delimited section names containing ignore keywords.
 # IgnoreURL  = list of comma-delimited section names containing ignore URLs.
@@ -19,6 +21,8 @@
 # Program    = application to call with the diff-file, special cases:
 #              "mozilla", pages are opened in new tabs,
 #              "konqueror", pages are opened using "kfmclient openURL"
+# ProgramDigest = if specified "true", the application specified under "Program" is
+#              invoked with a summary page that provides links to all changed pages.
 #############################################################################################
 
 Auth      = none
@@ -161,6 +165,10 @@ The following parameters (case-sensitive) are recognized in each section:
                  page to you instead of checking for and highlighting
                  changes in the page.  Put "webdiff" if you want Web
                  Secretary to check for changes.
+                 Put "htmldiff" to use a different implementation of HTML
+                 diff output. Note that you need to install the perl-modules
+                 Algorithm::Diff and HTML::Diff which are availabe on 
+                 http://www.cpan.org/ for this to work.
 
     Hicolor   -  Color used to highlight new or changed content. Currently,
                  four colors are defined. They are: blue, pink, yellow and
@@ -206,6 +214,10 @@ The following parameters (case-sensitive) are recognized in each section:
     Program    - application to call with the diff-file, special cases:
                  "mozilla", pages are opened in new tabs,
                  "konqueror", pages are opened using "kfmclient openURL"
+
+    ProgramDigest - If specified "true", websec does not open all changed pages 
+                 separately with the application specified in "Program", but opens
+                 a summary page that contains links to all changed pages. 
 
     Digest     - true|false or yes|no. This works only if EmailLink is
                  specified. It consolidates all the changed URLs and sends
