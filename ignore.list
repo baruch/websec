@@ -74,3 +74,7 @@ Dec \d+
 [Adverts]
 http://www.news.com/cgi-bin/acc_clickthru
 http://ads2.zdnet.com/adverts/
+
+[VIM]
+[\d,]+ scripts, [\d,]+ downloads
+[\d,]+ tips, [\d,]+ tip views
