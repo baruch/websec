@@ -15,6 +15,7 @@ install:
 	install webdiff.1 $(MANDIR)/man1/
 
 	install -d $(DOCDIR)
+	install -d $(DOCDIR)/examples
 	install -m 0644 url.list $(DOCDIR)/examples/
 	install -m 0644 ignore.list $(DOCDIR)/examples/
 	install -m 0644 README $(DOCDIR)/
