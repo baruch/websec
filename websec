@@ -77,7 +77,7 @@ if (! -e $webdiffbin) {
 @digest = ();
 
 # Set default values
-%defaults =
+local %defaults =
 (
     URL       => "",
     Auth      => "none",
@@ -99,6 +99,7 @@ if (! -e $webdiffbin) {
     Tmax      => 99999,
     AddSubject=> "",
     Digest    => "false",
+    UserAgent => "WebSec/1.4.0",
 );
 %siteinfo = %defaults;
 
@@ -157,17 +158,9 @@ sub HandleInput()
     $value     =~ s/^\s*\"?(.*?)\"?\s*$/$1/;
 
     # Check if valid keyword
-    if ($keyword ne "URL" && $keyword ne "Auth" && $keyword ne "Name"
-	&& $keyword ne "Prefix" && $keyword ne "Timeout"
-	&& $keyword ne "Retry" && $keyword ne "Retrywait"
-	&& $keyword ne "Randomwait"
-	&& $keyword ne "Diff" && $keyword ne "Hicolor" && $keyword ne "Ignore"
-	&& $keyword ne "Email" && $keyword ne "EmailLink"
-	&& $keyword ne "Tmin" && $keyword ne "Tmax" && $keyword ne "Proxy"
-	&& $keyword ne "IgnoreURL" && $keyword ne "ProxyAuth"
-	&& $keyword ne "Digest" && $keyword ne "AddSubject")
+    if (not defined $defaults{$keyword})
     {
-        print qq(Unrecognized keyword in line $.: "$_".\n);
+        print qq(Unrecognized keyword in line $.: "$_". Keyword="$keyword".\n);
         return -1;
     }
 
@@ -207,6 +200,7 @@ sub HandleSite()
     $tmax      = $siteinfo{Tmax};
     $addsubject= $siteinfo{AddSubject};
     $digest    = $siteinfo{Digest};
+    $useragent = $siteinfo{UserAgent};
 
     # If block without URL, assume parameter setting block and update default values
     if ($url eq "")
@@ -237,7 +231,7 @@ sub HandleSite()
 
     # Download URL using LWP
     $ua = new LWP::UserAgent;
-    $ua->agent("websec/1.0");
+    $ua->agent($useragent);
     $ua->timeout($timeout);
     $ua->env_proxy;
     if ($proxy ne "") { $ua->proxy(http => $proxy); }
