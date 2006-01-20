@@ -8,6 +8,9 @@
       This enables the mail reader to later show the file with the correct
       encoding. Solves bug #10980 in Savannah.
 
+    * If url.list is missing do not hang but report to the user and exit.
+      Solves bug #349024 in Debian.
+
 1.8.0 - Released on 02-Jan-2005
 
     * Support for diffing with HTML::Diff from CPAN, this has support to show
