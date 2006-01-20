@@ -145,14 +145,14 @@ url.list - websec url monitoring configuration
 
 =head1 DESCRIPTION
 
-The URL list consists of one or more sections separated by newlines.
+The URL list consists of one or more sections separated by newlines. You can
+have sections without a URL, they will update the defaults for all the
+subsequenet blocks. The Name and Prefix parameters are required as well as one
+of Email, EmailLink and Program. The rest are completely optional.
 
 The following parameters (case-sensitive) are recognized in each section:
 
     URL        - URL of web page to monitor
-
-    Auth       - Authentication information in "username:password" format. 
-                 Put "none" if no authentication needed.
 
     Name       - Name of web site. Pages delivered to you will have the
                  following format: "Name - Date (Day)" eg. "PC Magazine - 4
@@ -160,6 +160,19 @@ The following parameters (case-sensitive) are recognized in each section:
 
     Prefix     - Prefix of filenames for archive files of web pages created
                  by Web Secretary.
+
+    Email      - Comma-delimited list of email addresses to send highlighted
+                 pages to.
+
+    EmailLink  - Comma-delimited list of email addresses to send URL of
+                 changed pages to.
+
+    Program    - application to call with the diff-file, special cases:
+                 "mozilla", pages are opened in new tabs,
+                 "konqueror", pages are opened using "kfmclient openURL"
+
+    Auth       - Authentication information in "username:password" format. 
+                 Put "none" if no authentication needed.
 
     Diff       - Put "none" if you want Web Secretary to always mail this
                  page to you instead of checking for and highlighting
@@ -204,16 +217,6 @@ The following parameters (case-sensitive) are recognized in each section:
 
     MailFrom   - The E-Mail address to send mail from, this can be left empty
                  and the user used to run websec will be used.
-
-    Email      - Comma-delimited list of email addresses to send highlighted
-                 pages to.
-
-    EmailLink  - Comma-delimited list of email addresses to send URL of
-                 changed pages to.
-
-    Program    - application to call with the diff-file, special cases:
-                 "mozilla", pages are opened in new tabs,
-                 "konqueror", pages are opened using "kfmclient openURL"
 
     ProgramDigest - If specified "true", websec does not open all changed pages 
                  separately with the application specified in "Program", but opens
