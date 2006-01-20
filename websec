@@ -149,7 +149,7 @@ if (! -e $urllistfile) {
     exit 1;
 }
 
-open ARGV, $base . "/" . "$urllist" unless exists $ARGV[0];
+open ARGV, "$urllistfile" unless exists $ARGV[0];
 
 # Loop through input file and process all sites listed
 while (<>) {
