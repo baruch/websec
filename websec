@@ -40,6 +40,7 @@ use File::Spec;
 use Getopt::Long;
 use Pod::Usage;
 use File::Temp qw/tempfile/;
+use File::Copy;
 
 my $version = "1.9.0";
 
@@ -293,7 +294,7 @@ sub HandleSite() {
     $pagebase            = "$archive/$prefix";
     $page_previous       = "$pagebase.html";
     $page_archive        = "$pagebase.old.html";
-    $outgoing     = "$pagebase.diff.html";
+    (undef, $outgoing)     = tempfile( SUFFIX => '.html' );
     $page_previousExists = 1;
     open( FILE, $page_previous ) or $page_previousExists = 0;
     # get modification time
@@ -435,13 +436,13 @@ sub HandleSite() {
                 else {
                     print "No changes were detected.\n";
                 }
-                rename $page_previous, $page_archive;
-                rename $page_current,  $page_previous;
+                move $page_previous, $page_archive;
+                move $page_current,  $page_previous;
             }
             else {
                 print
                   "No previous version for this page. Storing in archive ...\n";
-                rename $page_current, $page_previous;
+                move $page_current, $page_previous;
             }
         }
         elsif ( $diff eq "htmldiff" )
@@ -483,13 +484,13 @@ sub HandleSite() {
                 else {
                     print "No changes were detected.\n";
                 }
-                rename $page_previous, $page_archive;
-                rename $page_current,  $page_previous;
+                move $page_previous, $page_archive;
+                move $page_current,  $page_previous;
             }
             else {
                 print
                   "No previous version for this page. Storing in archive ...\n";
-                rename $page_current, $page_previous;
+                move $page_current, $page_previous;
             }
         }
         else {
@@ -497,7 +498,7 @@ sub HandleSite() {
                 MailDocument( $page_current, $subj, $email,
                     $siteinfo{mailfrom} );
             }
-            if ($page_previousExists) { rename $page_previous, $page_archive; }
+            if ($page_previousExists) { move $page_previous, $page_archive; }
             rename $page_current, $page_previous;
         }
     }
@@ -523,6 +524,8 @@ sub HandleSite() {
             }
         }
     }
+
+    unlink($outgoing);
 
     return 0;
 }
