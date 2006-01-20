@@ -41,8 +41,10 @@ use Getopt::Long;
 use Pod::Usage;
 use File::Temp qw/tempfile/;
 
+my $version = "1.9.0";
+
 # Print introduction
-print "Web Secretary Ver 1.9.0\n";
+print "Web Secretary Ver $version\n";
 print "By Chew Wei Yih Copyleft (c) 1998\n\n";
 
 # Initialize parameters
@@ -134,7 +136,7 @@ local %defaults = (
     tmax       => 99999,
     addsubject => "",
     digest     => "false",
-    useragent  => "WebSec/1.7",
+    useragent  => "WebSec/$version",
     datefmt    => " - %d %B %Y (%a)",
     mailfrom   => "",
 );
