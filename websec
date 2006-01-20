@@ -211,6 +211,12 @@ sub HandleInput() {
 
     # Get keyword, value pair
     ( $keyword, $value ) = split ( /=/, $_, 2 );
+
+    if (not defined $value) {
+        print STDERR "Keyword '$keyword' has no value.\n";
+        exit 1;
+    }
+    
     $keyword =~ s/^\s*(.*?)\s*$/$1/;
     $keyword =~ tr/A-Z/a-z/;
     $value   =~ s/^\s*\"?(.*?)\"?\s*$/$1/;
