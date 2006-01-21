@@ -84,13 +84,6 @@ mkdir $archive, 0750 if !-d $archive;
 ($current_fh, $page_current) = tempfile(DIR=>"$base", UNLINK=>1, SUFFIX=>".html");
 $current_fh=-1;
 
-# Red Hat has sendmail in /usr/sbin/sendmail, but LWP::Protocol::mailto
-# expects it in /usr/lib/sendmail.  Revert to the Red Hat location if there
-# is no executable at the expected location.
-use vars qw($LWP::Protocol::mailto::SENDMAIL);
-$LWP::Protocol::mailto::SENDMAIL = "/usr/sbin/sendmail"
-  unless -x "/usr/lib/sendmail";
-
 # Location of webdiff, if it's in the same directory as websec, use it,
 # this enables simply opening the archive and using the program inplace.
 use FindBin;
