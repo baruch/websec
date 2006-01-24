@@ -1,3 +1,10 @@
+1.9.1 - Unreleased
+
+    * Add RPM spec file from Peter Bieringer <pb@bieringer.de>
+
+    * Remove hack to set sendmail path, the LWP::Protocol::mailto does that
+      itself.
+
 1.9.0 - Released on 20-Jan-2006
 
     * Add support for If-Modified-Since and keep last modified data to reduce
