@@ -54,17 +54,20 @@ $help = 0;
 $man  = 0;
 $urllist = "url.list";
 $base = "";
+$version = 0;
 
 # Parse command line options
 GetOptions(
     "urllist=s" => \$urllist,
     "help|?" => \$help,
     "man"    => \$man,
-    "base=s" => \$base
+    "base=s" => \$base,
+    "Version" => \$version,
 );
 
 pod2usage(1) if $help;
 pod2usage( -exitstatus => 0, -verbose => 2 ) if $man;
+if ($version) { exit 0; }
 
 if ($base eq "") {
     if ( -e $urllist ) {
@@ -679,6 +682,10 @@ Base directory for configuration (~/.websec by default)
 =item B<--urllist>
 
 Use another file for the url list, by default it is "url.list".
+
+=item B<--Version>
+
+Output the program header with the version and exit.
 
 =back
 
