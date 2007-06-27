@@ -148,7 +148,8 @@ url.list - websec url monitoring configuration
 The URL list consists of one or more sections separated by newlines. You can
 have sections without a URL, they will update the defaults for all the
 subsequenet blocks. The Name and Prefix parameters are required as well as one
-of Email, EmailLink and Program. The rest are completely optional.
+of Email, EmailLink and Program. The rest are completely optional. The configuration
+is expected to be of the form "keyword = value".
 
 The following parameters (case-sensitive) are recognized in each section:
 
