@@ -692,7 +692,8 @@ Output the program header with the version and exit.
 =head1 DESCRIPTION
 
 B<websec> is a web page monitoring software.  It will send you a changed web
-page with the contents highlighted.
+page with the contents highlighted. A new version of a web page will be fetched
+based on the timestamp of the archived pages.
 
 The base directory is the place from which B<websec> will read the config files
 and in which it will store its data.
