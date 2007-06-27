@@ -470,7 +470,7 @@ Debug messages
 
 =head1 DESCRIPTION
 
-B<webdiff> will compare two webpages and create an output file with the changesw
+B<webdiff> will compare two webpages and create an output file with the changes
 highlighted.
 
 
