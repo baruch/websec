@@ -8,7 +8,7 @@
 # Diff       = "webdiff" to detect and highlight differences,
 #              "htmldiff" to use HTML::Diff from cpan
 #              "none" to mail page as is.
-# HiColor    = "blue"; "yellow"; "pink"; or "grey".
+# Hicolor    = "blue"; "yellow"; "pink"; or "grey".
 # Ignore     = list of comma-delimited section names containing ignore keywords.
 # IgnoreURL  = list of comma-delimited section names containing ignore URLs.
 # Tmin       = every token containing <= Tmin words will not be highlighted for differences.
