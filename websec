@@ -290,6 +290,7 @@ sub HandleSite() {
     $pagebase            = "$archive/$prefix";
     $page_previous       = "$pagebase.html";
     $page_archive        = "$pagebase.old.html";
+    $page_highlight      = "$pagebase.hl.html";
     (undef, $outgoing)     = tempfile( SUFFIX => '.html' );
     $page_previousExists = 1;
     open( FILE, $page_previous ) or $page_previousExists = 0;
@@ -409,8 +410,9 @@ sub HandleSite() {
                         }
                         else {
                             my $filepath = File::Spec->rel2abs($page_previous);
+                            my $hlfilepath = File::Spec->rel2abs($page_highlight);
                             $linkmsg =
-"The contents of the following URL has changed:\n$url\n\nIt can also be found at:\nfile://$filepath\n";
+"The contents of the following URL has changed:\n$url\n\nIt can also be found at:\nfile://$filepath (original)\nfile://$hlfilepath (highlighted)\n";
                             MailMessage(
                                 $linkmsg,   $subj,
                                 $emailLink, $siteinfo{mailfrom}
@@ -428,6 +430,7 @@ sub HandleSite() {
                                     "&nbsp;<A HREF=\"".$url."\">current page on the net</A><P><P>";
                         }
                     }
+                    rename $outgoing,      $page_highlight;
                 }
                 else {
                     print "No changes were detected.\n";
