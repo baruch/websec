@@ -5,7 +5,7 @@ MAN1DIR=$(MANDIR)/man1
 MAN5DIR=$(MANDIR)/man5
 DOCDIR=$(DESTDIR)$(PREFIX)/share/doc/websec
 EMACSDIR=$(DESTDIR)$(PREFIX)/share/emacs/site-lisp
-VIMSYNDIR=$(DESTDIR)$(PREFIX)/share/vim/vim61/syntax
+VIMSYNDIR=$(DESTDIR)$(PREFIX)/share/vim/vim63/syntax
 
 PROGSRC=websec webdiff
 CONFSRC=url.list ignore.list
@@ -28,12 +28,12 @@ install: all
 	install webdiff $(BINDIR)/
 
 	install -d $(MAN1DIR)
-	install websec.1 $(MAN1DIR)
-	install webdiff.1 $(MAN1DIR)
+	install -m 0644 websec.1 $(MAN1DIR)
+	install -m 0644 webdiff.1 $(MAN1DIR)
 
 	install -d $(MAN5DIR)
-	install url.list.5 $(MAN5DIR)
-	install ignore.list.5 $(MAN5DIR)
+	install -m 0644 url.list.5 $(MAN5DIR)
+	install -m 0644 ignore.list.5 $(MAN5DIR)
 
 	install -d $(DOCDIR)
 	install -d $(DOCDIR)/examples
