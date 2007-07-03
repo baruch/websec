@@ -5,6 +5,11 @@
     * Remove hack to set sendmail path, the LWP::Protocol::mailto does that
       itself.
 
+    * Import fixes from the Debian package
+      * Makefile fixes
+      * manpage improvements
+      * Typo in url.list
+
 1.9.0 - Released on 20-Jan-2006
 
     * Add support for If-Modified-Since and keep last modified data to reduce
